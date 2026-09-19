@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #06070a;
+  --color-bg-elevated: #100b0d;
+  --color-bg-card: #140f11;
+  --color-fg: #f2ede9;
+  --color-muted: #a89ea0;
+  --color-muted-2: #6f6567;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-brand: #e6212f;
+  --color-brand-soft: rgba(230, 33, 47, 0.14);
+  --color-brand-strong: #ff3b49;
+}
+
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-fg);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -10%, rgba(230, 33, 47, 0.12), transparent 60%),
+    linear-gradient(180deg, #050708 0%, #0b0607 100%);
+  color: var(--color-fg);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  position: relative;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* Soft ambient light — a heavily blurred nod to the Avalanche mountain mark,
+   not a hard-edged logo silhouette (those read as glitches on a flat bg). */
+.ambient-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ambient-glow::before {
+  content: "";
+  position: absolute;
+  top: -28vw;
+  left: 50%;
+  translate: -50% 0;
+  width: 0;
+  height: 0;
+  border-left: 46vw solid transparent;
+  border-right: 46vw solid transparent;
+  border-bottom: 60vw solid rgba(230, 33, 47, 0.16);
+  filter: blur(120px);
+  opacity: 0.55;
+}
+
+/* Real additive film grain (feTurbulence noise), blended with `screen` so it
+   stays visible over a near-black background — soft-light/overlay blending
+   does nothing here since those modes pivot around mid-gray. */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 180px 180px;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+input,
+select,
+textarea {
+  color-scheme: dark;
+}
+
+.field {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.65rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--color-fg);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field:focus {
+  border-color: var(--color-brand);
+}
+
+.field::placeholder {
+  color: var(--color-muted-2);
+}
