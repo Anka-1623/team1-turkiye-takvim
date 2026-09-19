@@ -11,7 +11,7 @@ export function SiteFooter() {
           </span>
         </div>
         <a
-          href="https://github.com"
+          href="https://github.com/Anka-1623/kozalak-takvim"
           className="text-xs text-[var(--color-muted)] transition hover:text-[var(--color-fg)]"
         >
           Kaynak kod açık — katkı yapabilirsin
