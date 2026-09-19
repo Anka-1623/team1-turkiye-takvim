@@ -19,7 +19,7 @@ export default async function HomePage() {
           Team1 Türkiye
         </p>
         <h1 className="font-display mt-3 text-5xl font-extrabold leading-[0.95] text-[var(--color-fg)] sm:text-6xl">
-          Kozalak Takvim
+          Doğum Günü Takvimi
         </h1>
         <p className="mt-5 text-base leading-relaxed text-[var(--color-muted)]">
           Team1 Türkiye üyelerinin doğum günlerini tek yerde topluyoruz. Bilgini ekle, kimin

@@ -58,13 +58,13 @@ export default function OpengraphImage() {
         <div
           style={{
             marginTop: 16,
-            fontSize: 108,
+            fontSize: 92,
             fontWeight: 800,
             color: "#F2EDE9",
             lineHeight: 1,
           }}
         >
-          Kozalak Takvim
+          Doğum Günü Takvimi
         </div>
         <div style={{ marginTop: 20, fontSize: 30, color: "#A89EA0", display: "flex" }}>
           Üye doğum günleri — tek yerde

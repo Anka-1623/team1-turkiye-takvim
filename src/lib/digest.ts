@@ -76,10 +76,10 @@ export function renderDigestEmailHtml(today: Member[], soon: Member[]): string {
 <html lang="tr">
   <body style="margin:0;padding:0;background:#0B0607;">
     <div style="max-width:520px;margin:0 auto;padding:32px 20px;">
-      <div style="font-family:sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E6212F;font-weight:700;">Kozalak Takvim</div>
-      <div style="font-family:sans-serif;font-size:13px;color:#9A9296;margin-top:2px;">Team1 Türkiye doğum günü hatırlatması</div>
+      <div style="font-family:sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E6212F;font-weight:700;">Team1 Türkiye</div>
+      <div style="font-family:sans-serif;font-size:13px;color:#9A9296;margin-top:2px;">Doğum günü hatırlatması</div>
       ${sections.join("")}
-      <div style="font-family:sans-serif;font-size:12px;color:#635C5F;margin-top:32px;">Bu e-posta Kozalak Takvim'in günlük otomatik özetidir.</div>
+      <div style="font-family:sans-serif;font-size:12px;color:#635C5F;margin-top:32px;">Bu e-posta Team1 Türkiye doğum günü takviminin günlük otomatik özetidir.</div>
     </div>
   </body>
 </html>`;

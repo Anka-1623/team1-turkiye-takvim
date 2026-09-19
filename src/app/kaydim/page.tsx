@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ManageForm } from "@/components/ManageForm";
 
 export const metadata: Metadata = {
-  title: "Kaydımı Yönet — Kozalak Takvim",
+  title: "Kaydımı Yönet — Team1 Türkiye",
 };
 
 export default function KaydimPage() {

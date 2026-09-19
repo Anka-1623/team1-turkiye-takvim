@@ -1,4 +1,4 @@
--- Kozalak Takvim — canonical schema (current state, applied to the live
+-- Team1 Türkiye Doğum Günü Takvimi — canonical schema (current state, applied to the live
 -- Supabase project via two migrations). Re-run this on a fresh project to
 -- reproduce it from scratch.
 --

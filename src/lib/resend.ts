@@ -22,7 +22,7 @@ export async function sendDigestEmail({ to, subject, html }: SendEmailParams): P
     return { sent: false, reason: "ADMIN_NOTIFY_EMAILS not configured" };
   }
 
-  const from = process.env.RESEND_FROM_EMAIL || "Kozalak Takvim <onboarding@resend.dev>";
+  const from = process.env.RESEND_FROM_EMAIL || "Team1 Türkiye <onboarding@resend.dev>";
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",

@@ -22,7 +22,7 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Kozalak Takvim — Team1 Türkiye Doğum Günü Takvimi",
+  title: "Team1 Türkiye — Doğum Günü Takvimi",
   description:
     "Avalanche Team1 Türkiye üyeleri için doğum günü takvimi: bilgini ekle, yaklaşan doğum günlerini gör, kimseyi kutlamayı kaçırma.",
 };

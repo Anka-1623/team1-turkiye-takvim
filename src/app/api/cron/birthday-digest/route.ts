@@ -31,8 +31,8 @@ export async function GET(req: NextRequest) {
 
   const subject =
     today.length > 0
-      ? `🎉 Bugün doğum günü olan ${today.length} kişi var — Kozalak Takvim`
-      : `📅 Yaklaşan doğum günleri — Kozalak Takvim`;
+      ? `🎉 Bugün doğum günü olan ${today.length} kişi var — Team1 Türkiye`
+      : `📅 Yaklaşan doğum günleri — Team1 Türkiye`;
 
   const result = await sendDigestEmail({
     to: recipients,

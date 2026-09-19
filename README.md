@@ -1,4 +1,4 @@
-# Kozalak Takvim
+# Team1 Türkiye Doğum Günü Takvimi
 
 Avalanche Team1 Türkiye üyeleri için doğum günü takvimi. Üyeler ad/soyad,
 doğum günü, sosyal medya bağlantıları ve Team1 member portal ID'lerini
