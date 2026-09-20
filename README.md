@@ -12,7 +12,7 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
 - **Supabase (Postgres + Auth)** — tek tablo (`members`) + bir bildirim
   log tablosu (`birthday_notifications`). Sahiplik gerçek bir hesaba
   (magic-link login) bağlı; RLS `auth.uid()` üzerinden kontrol ediyor.
-- **Resend** — (a) admin'e günlük özet (bugün + 3 gün sonra olanlar) ve
+- **Brevo** — (a) admin'e günlük özet (bugün + 3 gün sonra olanlar) ve
   (b) bildirimi açan üyelere, bir teammate'in doğum günü 15/5/3/0 gün
   kala kişiye özel hatırlatma.
 - **Vercel Cron** — her ikisini de her gün tetikler (`vercel.json`).
@@ -70,8 +70,9 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → `service_role` — sadece 15/5/3/0 gün üye bildirimleri için, yoksa o kısım atlanır |
 | `CRON_SECRET` | Rastgele bir string üret (`openssl rand -hex 24`) |
-| `RESEND_API_KEY` | [resend.com](https://resend.com) — boş bırakılırsa özet e-postası sessizce atlanır |
-| `RESEND_FROM_EMAIL` | Doğrulanmış bir alan adın yoksa varsayılan `onboarding@resend.dev` çalışır |
+| `BREVO_API_KEY` | [brevo.com](https://brevo.com) → SMTP & API → API Keys — boş bırakılırsa mailler sessizce atlanır |
+| `MAIL_FROM_EMAIL` | Brevo → Settings → Senders'da doğruladığın bir adres olmalı |
+| `MAIL_FROM_NAME` | Kozmetik, boş bırakılırsa `Team1 Türkiye` kullanılır |
 | `ADMIN_NOTIFY_EMAILS` | Günlük özeti alacak adres(ler), virgülle ayrılmış |
 
 `.env*` dosyaları `.gitignore`'da (`.env.example` hariç) — gerçek key'ler

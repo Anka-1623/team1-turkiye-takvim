@@ -5,7 +5,7 @@ import {
   renderMemberNotificationHtml,
   renderMemberNotificationSubject,
 } from "@/lib/memberNotify";
-import { sendEmail } from "@/lib/resend";
+import { sendEmail } from "@/lib/email";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { daysUntilNextBirthday, nextOccurrenceYear } from "@/lib/date";
 import type { Member } from "@/lib/types";
@@ -20,7 +20,7 @@ type AdminMember = Member & { user_id: string | null; notify_opt_in: boolean };
  * needs cross-user data (auth.users emails, other members' notify_opt_in)
  * that RLS would otherwise block. Silently returns a skip reason when
  * SUPABASE_SERVICE_ROLE_KEY isn't configured yet, mirroring how the admin
- * digest degrades when RESEND_API_KEY is missing.
+ * digest degrades when BREVO_API_KEY is missing.
  */
 async function sendMemberNotifications() {
   const admin = createAdminClient();
