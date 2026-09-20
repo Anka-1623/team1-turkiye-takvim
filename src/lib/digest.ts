@@ -9,7 +9,7 @@ export const LEAD_DAYS = 3;
 export async function fetchAllMembers(): Promise<Member[]> {
   const { data, error } = await supabase
     .from("members")
-    .select("id, first_name, last_name, birthday, socials, created_at")
+    .select("id, first_name, last_name, birthday, socials, interests, note, created_at")
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as Member[];
@@ -27,7 +27,7 @@ export async function buildDigest(): Promise<{ today: Member[]; soon: Member[] }
   return { today, soon };
 }
 
-function escapeHtml(value: string): string {
+export function escapeHtml(value: string): string {
   return value
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

@@ -1,12 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
+import { SignOutButton } from "@/components/SignOutButton";
+import { createClient } from "@/lib/supabase/server";
 
 const LINKS = [
   { href: "/", label: "Panel" },
   { href: "/kaydim", label: "Kaydımı Yönet" },
 ];
 
-export function NavBar() {
+export async function NavBar() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
     <header className="relative z-20 border-b border-white/[0.08]">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
@@ -31,12 +38,16 @@ export function NavBar() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/kayit"
-            className="ml-1 rounded-full bg-[var(--color-brand)] px-4 py-1.5 font-semibold text-white transition hover:bg-[var(--color-brand-strong)]"
-          >
-            Kaydol
-          </Link>
+          {user ? (
+            <SignOutButton />
+          ) : (
+            <Link
+              href="/giris?next=/kayit"
+              className="ml-1 rounded-full bg-[var(--color-brand)] px-4 py-1.5 font-semibold text-white transition hover:bg-[var(--color-brand-strong)]"
+            >
+              Giriş yap
+            </Link>
+          )}
         </nav>
       </div>
     </header>

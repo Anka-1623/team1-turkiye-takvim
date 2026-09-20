@@ -23,8 +23,7 @@ function parseBirthday(birthday: string): { year: number; month: number; day: nu
   return { year: y, month: m, day: d };
 }
 
-/** Days until the next occurrence of this birthday (0 = today). Feb 29 falls back to Mar 1 on non-leap years. */
-export function daysUntilNextBirthday(birthday: string, today: Date = istanbulToday()): number {
+function nextOccurrenceDate(birthday: string, today: Date): Date {
   const { month, day } = parseBirthday(birthday);
 
   const occursIn = (year: number): Date => {
@@ -39,15 +38,24 @@ export function daysUntilNextBirthday(birthday: string, today: Date = istanbulTo
   if (next.getTime() < today.getTime()) {
     next = occursIn(thisYear + 1);
   }
+  return next;
+}
+
+/** Days until the next occurrence of this birthday (0 = today). Feb 29 falls back to Mar 1 on non-leap years. */
+export function daysUntilNextBirthday(birthday: string, today: Date = istanbulToday()): number {
+  const next = nextOccurrenceDate(birthday, today);
   return Math.round((next.getTime() - today.getTime()) / MS_PER_DAY);
+}
+
+/** The calendar year the next occurrence of this birthday falls in — used to dedupe milestone notifications per year. */
+export function nextOccurrenceYear(birthday: string, today: Date = istanbulToday()): number {
+  return nextOccurrenceDate(birthday, today).getUTCFullYear();
 }
 
 /** The age the member turns on their next birthday, if a birth year was given. */
 export function ageTurning(birthday: string, today: Date = istanbulToday()): number {
   const { year } = parseBirthday(birthday);
-  const days = daysUntilNextBirthday(birthday, today);
-  const next = new Date(today.getTime() + days * MS_PER_DAY);
-  return next.getUTCFullYear() - year;
+  return nextOccurrenceDate(birthday, today).getUTCFullYear() - year;
 }
 
 export function formatBirthdayLong(birthday: string): string {

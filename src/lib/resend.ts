@@ -13,13 +13,13 @@ type SendEmailResult =
  * `{ sent: false }` result instead of throwing when RESEND_API_KEY is
  * unset, so the cron route degrades gracefully before the key is added.
  */
-export async function sendDigestEmail({ to, subject, html }: SendEmailParams): Promise<SendEmailResult> {
+export async function sendEmail({ to, subject, html }: SendEmailParams): Promise<SendEmailResult> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return { sent: false, reason: "RESEND_API_KEY not configured" };
   }
   if (to.length === 0) {
-    return { sent: false, reason: "ADMIN_NOTIFY_EMAILS not configured" };
+    return { sent: false, reason: "no recipients" };
   }
 
   const from = process.env.RESEND_FROM_EMAIL || "Team1 Türkiye <onboarding@resend.dev>";

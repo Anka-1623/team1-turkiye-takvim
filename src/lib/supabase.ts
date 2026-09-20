@@ -10,10 +10,10 @@ if (!url || !anonKey) {
 }
 
 // This is the anon/publishable key on purpose — it is safe to ship in the
-// client bundle. The `members` table has no policies granting it direct
-// row access; every read goes through a column-restricted RLS policy (no
-// portal_id column) and every write goes through SECURITY DEFINER RPCs
-// that check the caller's portal_id inside Postgres. See supabase/schema.sql.
+// client bundle. For anonymous, public reads only (dashboard, admin
+// digest) — no session needed, so no cookie plumbing here. Login-aware
+// reads/writes (register/manage forms) use @/lib/supabase/client instead,
+// which persists the session via cookies. See supabase/schema.sql.
 export const supabase = createClient(url, anonKey, {
   auth: { persistSession: false },
 });

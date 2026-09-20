@@ -52,6 +52,17 @@ export function BirthdayCard({ member }: { member: Member }) {
           ))}
         </div>
       )}
+
+      {member.interests && (
+        <p className="mt-3 text-sm text-[var(--color-muted)]">
+          <span className="font-semibold text-[var(--color-fg)]">İlgi alanları:</span> {member.interests}
+        </p>
+      )}
+      {member.note && (
+        <p className="mt-1.5 text-sm text-[var(--color-muted)]">
+          <span className="font-semibold text-[var(--color-fg)]">Not:</span> {member.note}
+        </p>
+      )}
     </article>
   );
 }

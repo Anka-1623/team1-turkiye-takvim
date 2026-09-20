@@ -2,75 +2,49 @@
 
 import { useState, type FormEvent } from "react";
 import { SocialLinksEditor } from "@/components/SocialLinksEditor";
-import { supabase } from "@/lib/supabase";
-import type { EditableMember, SocialLink } from "@/lib/types";
+import { friendlyMemberError } from "@/lib/formErrors";
+import { createClient } from "@/lib/supabase/client";
+import type { EditableMember, MyMember } from "@/lib/types";
 
-const ERROR_MESSAGES: Record<string, string> = {
-  NOT_FOUND: "Bu Member Portal ID ile kayıtlı bir profil bulunamadı.",
-  INVALID_FIRST_NAME: "Ad alanı boş olamaz.",
-  INVALID_LAST_NAME: "Soyad alanı boş olamaz.",
-  INVALID_BIRTHDAY: "Doğum günü geçersiz. Gelecekte bir tarih olamaz.",
-  SOCIALS_REQUIRED: "En az bir sosyal medya bağlantısı gerekli.",
-  INVALID_SOCIALS: "Sosyal medya bağlantılarından biri geçersiz (http:// veya https:// ile başlamalı).",
-  TOO_MANY_SOCIALS: "En fazla 8 sosyal medya bağlantısı ekleyebilirsin.",
-};
+type Stage = "edit" | "confirm-delete" | "deleted";
 
-function friendlyError(message: string): string {
-  const code = Object.keys(ERROR_MESSAGES).find((k) => message.includes(k));
-  return code ? ERROR_MESSAGES[code] : "Bir şeyler ters gitti, tekrar dener misin?";
-}
-
-type Stage = "lookup" | "edit" | "confirm-delete" | "deleted";
-
-export function ManageForm() {
-  const [portalId, setPortalId] = useState("");
-  const [stage, setStage] = useState<Stage>("lookup");
+export function ManageForm({ initial }: { initial: MyMember }) {
+  const [stage, setStage] = useState<Stage>("edit");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
-  const [form, setForm] = useState<EditableMember | null>(null);
-
-  async function handleLookup(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
-    const { data, error: rpcError } = await supabase.rpc("lookup_member", {
-      p_portal_id: portalId.trim(),
-    });
-    setLoading(false);
-    if (rpcError) {
-      setError(friendlyError(rpcError.message));
-      return;
-    }
-    const row = data?.[0];
-    if (!row) {
-      setError(friendlyError("NOT_FOUND"));
-      return;
-    }
-    setForm({
-      first_name: row.first_name,
-      last_name: row.last_name,
-      birthday: row.birthday,
-      socials: (row.socials ?? []) as SocialLink[],
-    });
-    setStage("edit");
-  }
+  const [form, setForm] = useState<EditableMember>({
+    first_name: initial.first_name,
+    last_name: initial.last_name,
+    birthday: initial.birthday,
+    socials: initial.socials,
+    interests: initial.interests ?? "",
+    note: initial.note ?? "",
+    notify_opt_in: initial.notify_opt_in,
+  });
 
   async function handleSave(e: FormEvent) {
     e.preventDefault();
-    if (!form) return;
     setError(null);
     setLoading(true);
-    const { error: rpcError } = await supabase.rpc("update_member", {
-      p_portal_id: portalId.trim(),
-      p_first_name: form.first_name.trim(),
-      p_last_name: form.last_name.trim(),
-      p_birthday: form.birthday,
-      p_socials: form.socials.filter((s) => s.url.trim().length > 0),
-    });
+
+    const supabase = createClient();
+    const { error: updateError } = await supabase
+      .from("members")
+      .update({
+        first_name: form.first_name.trim(),
+        last_name: form.last_name.trim(),
+        birthday: form.birthday,
+        socials: form.socials.filter((s) => s.url.trim().length > 0),
+        interests: form.interests.trim() || null,
+        note: form.note.trim() || null,
+        notify_opt_in: form.notify_opt_in,
+      })
+      .eq("id", initial.id);
+
     setLoading(false);
-    if (rpcError) {
-      setError(friendlyError(rpcError.message));
+    if (updateError) {
+      setError(friendlyMemberError(updateError.message));
       return;
     }
     setSaved(true);
@@ -80,12 +54,11 @@ export function ManageForm() {
   async function handleDelete() {
     setError(null);
     setLoading(true);
-    const { error: rpcError } = await supabase.rpc("delete_member", {
-      p_portal_id: portalId.trim(),
-    });
+    const supabase = createClient();
+    const { error: deleteError } = await supabase.from("members").delete().eq("id", initial.id);
     setLoading(false);
-    if (rpcError) {
-      setError(friendlyError(rpcError.message));
+    if (deleteError) {
+      setError(friendlyMemberError(deleteError.message));
       return;
     }
     setStage("deleted");
@@ -101,39 +74,6 @@ export function ManageForm() {
       </div>
     );
   }
-
-  if (stage === "lookup") {
-    return (
-      <form onSubmit={handleLookup} className="space-y-4">
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
-            Member Portal ID
-          </span>
-          <input
-            required
-            value={portalId}
-            onChange={(e) => setPortalId(e.target.value)}
-            className="field w-full sm:w-80"
-            placeholder="Kayıt olurken kullandığın ID"
-          />
-        </label>
-        {error && (
-          <p className="rounded-lg border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] px-4 py-3 text-sm text-[var(--color-fg)]">
-            {error}
-          </p>
-        )}
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-full bg-[var(--color-brand)] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-strong)] disabled:opacity-50"
-        >
-          {loading ? "Aranıyor…" : "Kaydımı getir"}
-        </button>
-      </form>
-    );
-  }
-
-  if (!form) return null;
 
   return (
     <div className="space-y-6">
@@ -180,6 +120,45 @@ export function ManageForm() {
             onChange={(socials) => setForm({ ...form, socials })}
           />
         </div>
+
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
+            İlgi alanları <span className="text-[var(--color-muted-2)]">(opsiyonel)</span>
+          </span>
+          <input
+            maxLength={300}
+            value={form.interests}
+            onChange={(e) => setForm({ ...form, interests: e.target.value })}
+            className="field w-full"
+            placeholder="Örn. kitap, satranç, blockchain, yürüyüş"
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
+            Not <span className="text-[var(--color-muted-2)]">(opsiyonel)</span>
+          </span>
+          <textarea
+            maxLength={500}
+            value={form.note}
+            onChange={(e) => setForm({ ...form, note: e.target.value })}
+            rows={3}
+            className="field w-full"
+          />
+        </label>
+
+        <label className="flex items-start gap-2.5 text-sm text-[var(--color-muted)]">
+          <input
+            type="checkbox"
+            checked={form.notify_opt_in}
+            onChange={(e) => setForm({ ...form, notify_opt_in: e.target.checked })}
+            className="mt-0.5"
+          />
+          <span>
+            Diğer üyelerin doğum günü yaklaşınca (15/5/3 gün kala ve günü geldiğinde) bana e-posta
+            ile hatırlat.
+          </span>
+        </label>
 
         {error && (
           <p className="rounded-lg border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] px-4 py-3 text-sm text-[var(--color-fg)]">
