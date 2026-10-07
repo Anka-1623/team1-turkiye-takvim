@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { Alert } from "@/components/Alert";
+import { CheckIcon } from "@/components/Icons";
 import { SocialLinksEditor } from "@/components/SocialLinksEditor";
 import { friendlyMemberError } from "@/lib/formErrors";
 import { createClient } from "@/lib/supabase/client";
@@ -66,9 +68,9 @@ export function ManageForm({ initial }: { initial: MyMember }) {
 
   if (stage === "deleted") {
     return (
-      <div className="panel">
-        <h2 className="text-3xl">Kayıt silindi</h2>
-        <p className="mt-2 text-sm text-ink-2">
+      <div className="card result" role="status">
+        <h2 className="card-title">Kayıt silindi</h2>
+        <p className="muted">
           Doğum günün panelden kaldırıldı. Tekrar eklemek istersen kayıt sayfasına dönebilirsin.
         </p>
       </div>
@@ -76,25 +78,27 @@ export function ManageForm({ initial }: { initial: MyMember }) {
   }
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSave} className="space-y-5">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="stack">
+      <form onSubmit={handleSave} className="card stack">
+        <div className="form-row">
           <label className="block">
             <span className="label">Ad</span>
             <input
               required
+              autoComplete="given-name"
               value={form.first_name}
               onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-              className="field w-full"
+              className="field"
             />
           </label>
           <label className="block">
             <span className="label">Soyad</span>
             <input
               required
+              autoComplete="family-name"
               value={form.last_name}
               onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-              className="field w-full"
+              className="field"
             />
           </label>
         </div>
@@ -104,103 +108,88 @@ export function ManageForm({ initial }: { initial: MyMember }) {
           <input
             required
             type="date"
+            autoComplete="bday"
             max={new Date().toISOString().slice(0, 10)}
             value={form.birthday}
             onChange={(e) => setForm({ ...form, birthday: e.target.value })}
-            className="field w-full sm:w-56"
+            className="field field--short"
           />
         </label>
 
-        <div>
-          <span className="label">
-            Sosyal medya bağlantıları
-          </span>
-          <SocialLinksEditor
-            value={form.socials}
-            onChange={(socials) => setForm({ ...form, socials })}
-          />
-        </div>
+        <fieldset>
+          <legend className="label">Sosyal medya bağlantıları</legend>
+          <SocialLinksEditor value={form.socials} onChange={(socials) => setForm({ ...form, socials })} />
+        </fieldset>
 
         <label className="block">
           <span className="label">
-            İlgi alanları <span className="text-ink-3">(opsiyonel)</span>
+            İlgi alanları <span className="opt">(opsiyonel)</span>
           </span>
           <input
             maxLength={300}
             value={form.interests}
             onChange={(e) => setForm({ ...form, interests: e.target.value })}
-            className="field w-full"
+            className="field"
             placeholder="Örn. kitap, satranç, blockchain, yürüyüş"
           />
         </label>
 
         <label className="block">
           <span className="label">
-            Not <span className="text-ink-3">(opsiyonel)</span>
+            Not <span className="opt">(opsiyonel)</span>
           </span>
           <textarea
             maxLength={500}
             value={form.note}
             onChange={(e) => setForm({ ...form, note: e.target.value })}
             rows={3}
-            className="field w-full"
+            className="field"
           />
         </label>
 
-        <label className="flex items-start gap-2.5 text-sm text-ink-2">
+        <label className="check">
           <input
             type="checkbox"
             checked={form.notify_opt_in}
             onChange={(e) => setForm({ ...form, notify_opt_in: e.target.checked })}
-            className="mt-0.5"
           />
           <span>
-            Doğum günü e-postaları: diğer üyelerin doğum günü yaklaşırken (7 ve 3 gün kala, bir de günü geldiğinde) hatırlatma, kendi doğum günümde de bir kutlama almak istiyorum.
+            Doğum günü e-postaları: diğer üyelerin doğum günü yaklaşırken (7 ve 3 gün kala, bir de günü
+            geldiğinde) hatırlatma, kendi doğum günümde de bir kutlama almak istiyorum.
           </span>
         </label>
 
-        {error && (
-          <p role="alert" className="alert">
-            {error}
-          </p>
-        )}
+        {error && <Alert>{error}</Alert>}
 
         <div className="flex flex-wrap items-center gap-3">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-          >
-            {loading ? "Kaydediliyor…" : "Değişiklikleri kaydet"}
+          <button type="submit" disabled={loading} aria-busy={loading && stage === "edit"} className="btn btn-primary">
+            {loading && stage === "edit" ? "Kaydediliyor…" : "Değişiklikleri kaydet"}
           </button>
-          {saved && <span className="text-sm text-ink-2">Kaydedildi</span>}
-          <button
-            type="button"
-            onClick={() => setStage("confirm-delete")}
-            className="link-btn link-btn-quiet ml-auto"
-          >
+          <span role="status" aria-live="polite">
+            {saved && (
+              <span className="status">
+                <CheckIcon size={18} />
+                Kaydedildi
+              </span>
+            )}
+          </span>
+          <button type="button" onClick={() => setStage("confirm-delete")} className="link-btn ml-auto">
             Kaydı sil
           </button>
         </div>
       </form>
 
       {stage === "confirm-delete" && (
-        <div className="panel panel-accent">
-          <p className="text-sm text-ink">
-            Kaydını kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.
-          </p>
-          <div className="mt-3 flex gap-3">
-            <button
-              onClick={handleDelete}
-              disabled={loading}
-              className="btn btn-primary"
-            >
+        <div className="card card--signal result" role="alertdialog" aria-labelledby="sil-baslik">
+          <h2 id="sil-baslik" className="card-title">
+            Kaydı silmek istiyor musun?
+          </h2>
+          <p className="muted">Kaydın kalıcı olarak silinir. Bu işlem geri alınamaz.</p>
+          <div className="result__actions">
+            <button onClick={handleDelete} disabled={loading} aria-busy={loading} className="btn btn-danger">
               {loading ? "Siliniyor…" : "Evet, sil"}
             </button>
-            <button
-              onClick={() => setStage("edit")}
-              className="btn btn-ghost"
-            >
+            <button onClick={() => setStage("edit")} className="btn btn-secondary">
               Vazgeç
             </button>
           </div>
