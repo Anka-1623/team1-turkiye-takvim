@@ -16,7 +16,7 @@ type AdminMember = Member & { user_id: string | null; notify_opt_in: boolean };
 
 /**
  * Sends each opted-in member (excluding the birthday person) a heads-up at
- * 15/5/3/0 days out. Runs entirely on the service-role client since it
+ * 7/3/0 days out. Runs entirely on the service-role client since it
  * needs cross-user data (auth.users emails, other members' notify_opt_in)
  * that RLS would otherwise block. Silently returns a skip reason when
  * SUPABASE_SERVICE_ROLE_KEY isn't configured yet, mirroring how the admin

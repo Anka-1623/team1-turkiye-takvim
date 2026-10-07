@@ -155,7 +155,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
             className="mt-0.5"
           />
           <span>
-            Diğer üyelerin doğum günü yaklaşınca (15/5/3 gün kala ve günü geldiğinde) bana e-posta
+            Diğer üyelerin doğum günü yaklaşınca (7 ve 3 gün kala, bir de günü geldiğinde) bana e-posta
             ile hatırlat.
           </span>
         </label>

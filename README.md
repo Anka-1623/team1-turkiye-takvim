@@ -3,7 +3,7 @@
 Avalanche Team1 Türkiye üyeleri için doğum günü takvimi. Üyeler mailleriyle
 giriş yapıp ad/soyad, doğum günü, sosyal medya bağlantıları, ilgi
 alanları ve bir not girer; panel bunu herkese açık listeler. Doğum günü
-yaklaşan/bugün olan üyeler panelde görünür ve isteyen üyelere 15/5/3 gün
+yaklaşan/bugün olan üyeler panelde görünür ve isteyen üyelere 7/3 gün
 kala ve gün geldiğinde e-posta ile hatırlatılır.
 
 ## Nasıl çalışıyor
@@ -13,7 +13,7 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
   log tablosu (`birthday_notifications`). Sahiplik gerçek bir hesaba
   (magic-link login) bağlı; RLS `auth.uid()` üzerinden kontrol ediyor.
 - **Brevo** — (a) admin'e günlük özet (bugün + 3 gün sonra olanlar) ve
-  (b) bildirimi açan üyelere, bir teammate'in doğum günü 15/5/3/0 gün
+  (b) bildirimi açan üyelere, bir teammate'in doğum günü 7/3/0 gün
   kala kişiye özel hatırlatma.
 - **Vercel Cron** — her ikisini de her gün tetikler (`vercel.json`).
 
@@ -29,8 +29,9 @@ girerek eski kayıtlarını yeni hesaplarına bağlayabilir
 
 ### Bildirimler
 
-`/kaydim`'deki "bana e-posta ile hatırlat" kutusunu işaretleyen üyeler,
-kendileri hariç her teammate'in doğum günü 15, 5, 3 gün kala ve gün
+"Bana e-posta ile hatırlat" kutusunu işaretli bırakan üyeler (yeni kayıtta varsayılan
+olarak işaretli gelir, `/kaydim`'den kapatılır),
+kendileri hariç her teammate'in doğum günü 7 ve 3 gün kala ve gün
 geldiğinde bir mail alır — mailde ilgi alanları/not da görünür (hediye
 fikri için). Aynı hatırlatmanın bir yılda birden fazla gitmemesi
 `birthday_notifications` tablosuyla garanti edilir. Bu akış, `auth.users`
@@ -68,7 +69,7 @@ npm run dev
 | Değişken | Nereden |
 |---|---|
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → `service_role` — sadece 15/5/3/0 gün üye bildirimleri için, yoksa o kısım atlanır |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → `service_role` — sadece 7/3/0 gün üye bildirimleri için, yoksa o kısım atlanır |
 | `CRON_SECRET` | Rastgele bir string üret (`openssl rand -hex 24`) |
 | `BREVO_API_KEY` | [brevo.com](https://brevo.com) → SMTP & API → API Keys — boş bırakılırsa mailler sessizce atlanır |
 | `MAIL_FROM_EMAIL` | Brevo → Settings → Senders'da doğruladığın bir adres olmalı |

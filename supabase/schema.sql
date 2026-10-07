@@ -169,7 +169,7 @@ revoke all on function public.claim_legacy_member(text) from public;
 revoke execute on function public.claim_legacy_member(text) from anon;
 grant execute on function public.claim_legacy_member(text) to authenticated;
 
--- Dedup log for the 15/5/3/0-day opt-in reminder emails, keyed by the
+-- Dedup log for the 7/3/0-day opt-in reminder emails, keyed by the
 -- calendar year of the occurrence being notified about (so it resets
 -- every year). Only the cron's service-role client (which bypasses RLS)
 -- ever touches this table — no policies are granted on purpose.

@@ -1,15 +1,16 @@
 import { escapeHtml } from "@/lib/digest";
 import { formatBirthdayLong } from "@/lib/date";
 import { platformLabel } from "@/lib/socials";
+import { genitive } from "@/lib/tr";
 import type { Member } from "@/lib/types";
 
 /** Days-before-birthday points that trigger an opt-in reminder to teammates. 0 = the day itself. */
-export const MEMBER_NOTIFY_MILESTONES = [15, 5, 3, 0] as const;
+export const MEMBER_NOTIFY_MILESTONES = [7, 3, 0] as const;
 
 function milestoneHeading(member: Member, milestone: number): string {
   const name = `${member.first_name} ${member.last_name}`;
-  if (milestone === 0) return `🎉 Bugün ${name}'ın doğum günü!`;
-  return `🎂 ${name}'ın doğum günü ${milestone} gün sonra`;
+  if (milestone === 0) return `🎉 Bugün ${genitive(name)} doğum günü!`;
+  return `🎂 ${genitive(name)} doğum gününe ${milestone} gün kaldı`;
 }
 
 export function renderMemberNotificationSubject(member: Member, milestone: number): string {
@@ -45,7 +46,7 @@ export function renderMemberNotificationHtml(member: Member, milestone: number):
     <div style="max-width:520px;margin:0 auto;padding:32px 20px;">
       <div style="font-family:sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E6212F;font-weight:700;">Team1 Türkiye</div>
       <div style="font-family:sans-serif;font-size:13px;color:#9A9296;margin-top:2px;">Doğum günü hatırlatması</div>
-      <h2 style="font-family:sans-serif;color:#F2EDEA;font-size:18px;margin:24px 0 8px;">${milestoneHeading(member, milestone)}</h2>
+      <h2 style="font-family:sans-serif;color:#F2EDEA;font-size:18px;margin:24px 0 8px;">${escapeHtml(milestoneHeading(member, milestone))}</h2>
       <div style="font-family:sans-serif;font-size:14px;color:#F2EDEA;">${name} — ${formatBirthdayLong(member.birthday)}</div>
       ${links ? `<div style="font-family:sans-serif;font-size:13px;color:#9A9296;margin-top:6px;">${links}</div>` : ""}
       ${extras.join("")}

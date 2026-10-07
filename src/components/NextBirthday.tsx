@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { ageTurning, daysUntilNextBirthday, formatBirthdayLong } from "@/lib/date";
+import { genitive } from "@/lib/tr";
 import type { Member } from "@/lib/types";
 
 /** Hero slab: the next birthday on the calendar, or today's. `sorted` must be ordered by days left. */
@@ -25,7 +26,7 @@ export function NextBirthday({ sorted }: { sorted: Member[] }) {
 
   return (
     <aside className="slab rise" style={style} aria-label="Sıradaki doğum günü">
-      <p className="slab-label">{days === 0 ? "Bugün doğum günü" : "Sıradaki doğum günü"}</p>
+      <p className="slab-label">{days === 0 ? "Bugün" : "Sıradaki doğum günü"}</p>
 
       <div className="slab-main">
         {days <= 1 ? (
@@ -33,15 +34,13 @@ export function NextBirthday({ sorted }: { sorted: Member[] }) {
         ) : (
           <>
             <span className="slab-num">{days}</span>
-            <span className="slab-unit">gün sonra</span>
+            <span className="slab-unit">gün kaldı</span>
           </>
         )}
       </div>
 
       <div>
-        <p className="slab-name">
-          {first.first_name} {first.last_name}
-        </p>
+        <p className="slab-name">{genitive(`${first.first_name} ${first.last_name}`)} doğum günü</p>
         <p className="slab-sub">
           {formatBirthdayLong(first.birthday)}
           {days === 0 ? `, ${ageTurning(first.birthday)} yaşına giriyor` : ""}

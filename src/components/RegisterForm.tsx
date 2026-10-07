@@ -14,10 +14,10 @@ export function RegisterForm() {
   const [socials, setSocials] = useState<SocialLink[]>([{ platform: "x", url: "" }]);
   const [interests, setInterests] = useState("");
   const [note, setNote] = useState("");
-  const [notifyOptIn, setNotifyOptIn] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [notifyOptIn, setNotifyOptIn] = useState(true);
+  const [submitting, setSubmitting] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(true);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -144,7 +144,7 @@ export function RegisterForm() {
           className="mt-0.5"
         />
         <span>
-          Diğer üyelerin doğum günü yaklaşınca (15/5/3 gün kala ve günü geldiğinde) bana e-posta ile
+          Diğer üyelerin doğum günü yaklaşınca (7 ve 3 gün kala, bir de günü geldiğinde) bana e-posta ile
           hatırlat.
         </span>
       </label>
