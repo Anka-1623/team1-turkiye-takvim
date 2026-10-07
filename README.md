@@ -1,6 +1,6 @@
 # Team1 Türkiye Doğum Günü Takvimi
 
-Avalanche Team1 Türkiye üyeleri için doğum günü takvimi. Üyeler mailleriyle
+Team1 Türkiye üyeleri için doğum günü takvimi. Üyeler mailleriyle
 giriş yapıp ad/soyad, doğum günü, sosyal medya bağlantıları, ilgi
 alanları ve bir not girer; panel bunu herkese açık listeler. Doğum günü
 yaklaşan/bugün olan üyeler panelde görünür ve isteyen üyelere 7/3 gün
@@ -16,6 +16,15 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
   (b) bildirimi açan üyelere, bir teammate'in doğum günü 7/3/0 gün
   kala kişiye özel hatırlatma.
 - **Vercel Cron** — her ikisini de her gün tetikler (`vercel.json`).
+
+### Tasarım
+
+Arayüz Team1 tasarım sistemine göre yapıldı (`avalancheteam1/design-system`, `team1-design-system`
+skill'i v2.2.0): varsayılan koyu tema (açık tema footer'daki anahtarla), başlıklarda Kanit Medium 500,
+gövdede Kanit Light 300, Ava Red `#E6212F` yalnızca vurgu ve birincil eylem için. Token'lar
+`src/app/team1-tokens.css` (sistemden birebir kopya), anlamsal roller ve iki tema `src/app/theme.css`,
+bileşen stilleri `src/app/globals.css` içinde. Logolar ve favicon'lar sistemden değiştirilmeden alındı;
+hangi dosyanın nereden geldiği `public/brand/team1/PROVENANCE.md`'de.
 
 ### Giriş sistemi
 

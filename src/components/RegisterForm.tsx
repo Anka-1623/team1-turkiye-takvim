@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { Alert } from "@/components/Alert";
+import { CheckIcon } from "@/components/Icons";
 import { SocialLinksEditor } from "@/components/SocialLinksEditor";
 import { friendlyMemberError } from "@/lib/formErrors";
 import { createClient } from "@/lib/supabase/client";
@@ -15,9 +17,9 @@ export function RegisterForm() {
   const [interests, setInterests] = useState("");
   const [note, setNote] = useState("");
   const [notifyOptIn, setNotifyOptIn] = useState(true);
-  const [submitting, setSubmitting] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(true);
+  const [done, setDone] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -46,32 +48,35 @@ export function RegisterForm() {
 
   if (done) {
     return (
-      <div className="panel panel-accent">
-        <h2 className="text-3xl">Eklendi</h2>
-        <p className="mt-2 text-sm text-ink-2">
-          Doğum günün panelde görünüyor. Kaydını dilediğin zaman &apos;Kaydımı Yönet&apos;
-          sayfasından düzenleyebilir veya silebilirsin.
+      <div className="card card--signal result" role="status">
+        <span className="card__icon">
+          <CheckIcon size={24} />
+        </span>
+        <h2 className="card-title">Eklendi</h2>
+        <p className="muted">
+          Doğum günün panelde görünüyor. Kaydını dilediğin zaman &apos;Kaydımı Yönet&apos; sayfasından
+          düzenleyebilir veya silebilirsin.
         </p>
-        <Link
-          href="/"
-          className="btn btn-primary mt-6"
-        >
-          Panele dön
-        </Link>
+        <div className="result__actions">
+          <Link href="/" className="btn btn-primary">
+            Panele dön
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <form onSubmit={handleSubmit} className="card stack">
+      <div className="form-row">
         <label className="block">
           <span className="label">Ad</span>
           <input
             required
+            autoComplete="given-name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
-            className="field w-full"
+            className="field"
             placeholder="Emirhan"
           />
         </label>
@@ -79,9 +84,10 @@ export function RegisterForm() {
           <span className="label">Soyad</span>
           <input
             required
+            autoComplete="family-name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
-            className="field w-full"
+            className="field"
             placeholder="Solmaz"
           />
         </label>
@@ -92,75 +98,64 @@ export function RegisterForm() {
         <input
           required
           type="date"
+          autoComplete="bday"
           max={new Date().toISOString().slice(0, 10)}
           value={birthday}
           onChange={(e) => setBirthday(e.target.value)}
-          className="field w-full sm:w-56"
+          className="field field--short"
         />
       </label>
 
-      <div>
-        <span className="label">
-          Sosyal medya bağlantıları <span className="text-accent">*en az bir tane</span>
-        </span>
+      <fieldset>
+        <legend className="label">
+          Sosyal medya bağlantıları <span className="opt">en az bir tane gerekli</span>
+        </legend>
         <SocialLinksEditor value={socials} onChange={setSocials} />
-      </div>
+      </fieldset>
 
       <label className="block">
         <span className="label">
-          İlgi alanları <span className="text-ink-3">(opsiyonel)</span>
+          İlgi alanları <span className="opt">(opsiyonel)</span>
         </span>
         <input
           maxLength={300}
           value={interests}
           onChange={(e) => setInterests(e.target.value)}
-          className="field w-full"
+          className="field"
           placeholder="Örn. kitap, satranç, blockchain, yürüyüş"
         />
-        <span className="help">
-          Diğer üyeler hediye/kutlama fikri bulabilsin diye panelde görünür.
-        </span>
+        <span className="help">Diğer üyeler hediye/kutlama fikri bulabilsin diye panelde görünür.</span>
       </label>
 
       <label className="block">
         <span className="label">
-          Not <span className="text-ink-3">(opsiyonel)</span>
+          Not <span className="opt">(opsiyonel)</span>
         </span>
         <textarea
           maxLength={500}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
-          className="field w-full"
+          className="field"
           placeholder="Örn. bu yıl sürpriz istemiyorum, ya da bir dilek listesi bağlantısı"
         />
       </label>
 
-      <label className="flex items-start gap-2.5 text-sm text-ink-2">
-        <input
-          type="checkbox"
-          checked={notifyOptIn}
-          onChange={(e) => setNotifyOptIn(e.target.checked)}
-          className="mt-0.5"
-        />
+      <label className="check">
+        <input type="checkbox" checked={notifyOptIn} onChange={(e) => setNotifyOptIn(e.target.checked)} />
         <span>
-          Doğum günü e-postaları: diğer üyelerin doğum günü yaklaşırken (7 ve 3 gün kala, bir de günü geldiğinde) hatırlatma, kendi doğum günümde de bir kutlama almak istiyorum.
+          Doğum günü e-postaları: diğer üyelerin doğum günü yaklaşırken (7 ve 3 gün kala, bir de günü
+          geldiğinde) hatırlatma, kendi doğum günümde de bir kutlama almak istiyorum.
         </span>
       </label>
 
-      {error && (
-        <p role="alert" className="alert">
-          {error}
-        </p>
-      )}
+      {error && <Alert>{error}</Alert>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="btn btn-primary"
-      >
-        {submitting ? "Ekleniyor…" : "Doğum günümü ekle"}
-      </button>
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="submit" disabled={submitting} aria-busy={submitting} className="btn btn-primary">
+          {submitting ? "Ekleniyor…" : "Doğum günümü ekle"}
+        </button>
+      </div>
     </form>
   );
 }

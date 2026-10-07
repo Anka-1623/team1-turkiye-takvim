@@ -11,27 +11,20 @@ export async function NavBar() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-paper">
-      <div className="shell flex h-16 items-center justify-between gap-3">
-        <Link href="/" className="flex shrink-0 items-center gap-3">
+    <header className="site-header">
+      <div className="shell site-header__inner">
+        <Link href="/" className="brand-link">
+          <span className="sr-only">Team1 Türkiye Doğum Günü Takvimi, ana sayfa</span>
           <Image
-            src="/brand/avalanche-triangle.png"
+            src="/brand/team1/team1turkiye.svg"
             alt=""
-            width={22}
-            height={20}
+            width={1727}
+            height={257}
             priority
-            className="hidden h-5 w-auto sm:block"
-          />
-          <Image
-            src="/brand/team1-turkiye-wordmark.png"
-            alt="Team1 Türkiye"
-            width={136}
-            height={20}
-            priority
-            className="h-[15px] w-auto sm:h-[18px]"
+            className="logo logo--chapter"
           />
         </Link>
-        <nav className="flex items-center" aria-label="Ana menü">
+        <nav className="nav" aria-label="Ana menü">
           <NavLink href="/" className="hidden sm:inline-flex">
             Panel
           </NavLink>
@@ -42,7 +35,7 @@ export async function NavBar() {
           {user ? (
             <SignOutButton />
           ) : (
-            <Link href="/giris?next=/kayit" className="btn btn-primary btn-sm ml-2">
+            <Link href="/giris?next=/kayit" className="btn btn-primary btn-sm">
               Giriş yap
             </Link>
           )}
