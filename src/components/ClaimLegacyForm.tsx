@@ -42,9 +42,9 @@ export function ClaimLegacyForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.1] bg-[var(--color-bg-card)] p-6">
-      <h2 className="font-display text-xl font-bold text-[var(--color-fg)]">Henüz bir kaydın yok</h2>
-      <p className="mt-2 text-sm text-[var(--color-muted)]">
+    <div className="panel">
+      <h2 className="text-2xl">Henüz bir kaydın yok</h2>
+      <p className="mt-2 text-sm text-ink-2">
         Daha önce Member Portal ID ile kaydolduysan, o ID&apos;yi girerek kaydını bu hesaba
         bağlayabilirsin.
       </p>
@@ -57,21 +57,21 @@ export function ClaimLegacyForm() {
           placeholder="Eski Member Portal ID'in"
         />
         {error && (
-          <p className="rounded-lg border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] px-4 py-3 text-sm text-[var(--color-fg)]">
+          <p role="alert" className="alert">
             {error}
           </p>
         )}
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-[var(--color-brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-strong)] disabled:opacity-50"
+          className="btn btn-primary"
         >
           {loading ? "Bağlanıyor…" : "Kaydımı bağla"}
         </button>
       </form>
-      <p className="mt-4 text-sm text-[var(--color-muted)]">
+      <p className="mt-4 text-sm text-ink-2">
         Hiç kaydolmadıysan{" "}
-        <Link href="/kayit" className="text-[var(--color-brand)] underline underline-offset-2">
+        <Link href="/kayit" className="link">
           buradan yeni kayıt oluşturabilirsin
         </Link>
         .

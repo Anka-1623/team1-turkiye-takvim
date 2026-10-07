@@ -1,12 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { NavLink } from "@/components/NavLink";
 import { SignOutButton } from "@/components/SignOutButton";
 import { createClient } from "@/lib/supabase/server";
-
-const LINKS = [
-  { href: "/", label: "Panel" },
-  { href: "/kaydim", label: "Kaydımı Yönet" },
-];
 
 export async function NavBar() {
   const supabase = await createClient();
@@ -15,36 +11,38 @@ export async function NavBar() {
   } = await supabase.auth.getUser();
 
   return (
-    <header className="relative z-20 border-b border-white/[0.08]">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <Image src="/brand/avalanche-triangle.png" alt="" width={20} height={18} priority />
+    <header className="sticky top-0 z-30 border-b border-line bg-paper">
+      <div className="shell flex h-16 items-center justify-between gap-3">
+        <Link href="/" className="flex shrink-0 items-center gap-3">
+          <Image
+            src="/brand/avalanche-triangle.png"
+            alt=""
+            width={22}
+            height={20}
+            priority
+            className="hidden h-5 w-auto sm:block"
+          />
           <Image
             src="/brand/team1-turkiye-wordmark.png"
             alt="Team1 Türkiye"
             width={136}
             height={20}
             priority
-            className="h-[18px] w-auto"
+            className="h-[15px] w-auto sm:h-[18px]"
           />
         </Link>
-        <nav className="flex items-center gap-1 text-sm">
-          {LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="rounded-full px-3 py-1.5 text-[var(--color-muted)] transition hover:text-[var(--color-fg)]"
-            >
-              {l.label}
-            </Link>
-          ))}
+        <nav className="flex items-center" aria-label="Ana menü">
+          <NavLink href="/" className="hidden sm:inline-flex">
+            Panel
+          </NavLink>
+          <NavLink href="/kaydim">
+            <span className="sm:hidden">Kaydım</span>
+            <span className="hidden sm:inline">Kaydımı Yönet</span>
+          </NavLink>
           {user ? (
             <SignOutButton />
           ) : (
-            <Link
-              href="/giris?next=/kayit"
-              className="ml-1 rounded-full bg-[var(--color-brand)] px-4 py-1.5 font-semibold text-white transition hover:bg-[var(--color-brand-strong)]"
-            >
+            <Link href="/giris?next=/kayit" className="btn btn-primary btn-sm ml-2">
               Giriş yap
             </Link>
           )}

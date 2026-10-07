@@ -47,7 +47,7 @@ export function SocialLinksEditor({ value, onChange }: Props) {
             type="button"
             onClick={() => remove(i)}
             aria-label="Bağlantıyı kaldır"
-            className="shrink-0 rounded-lg border border-white/[0.1] px-3 text-sm text-[var(--color-muted)] transition hover:border-[var(--color-brand)]/50 hover:text-[var(--color-fg)]"
+            className="btn btn-ghost shrink-0 px-3.5"
           >
             ✕
           </button>
@@ -57,7 +57,7 @@ export function SocialLinksEditor({ value, onChange }: Props) {
         <button
           type="button"
           onClick={add}
-          className="field w-full text-left text-[var(--color-muted-2)]"
+          className="field w-full text-left text-ink-3"
         >
           + Bağlantı ekle
         </button>
@@ -66,7 +66,7 @@ export function SocialLinksEditor({ value, onChange }: Props) {
         <button
           type="button"
           onClick={add}
-          className="text-sm font-medium text-[var(--color-brand)] hover:text-[var(--color-brand-strong)]"
+          className="link-btn"
         >
           + Bağlantı ekle
         </button>

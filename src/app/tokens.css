@@ -1,0 +1,33 @@
+/* Hallmark · custom theme "Avalanche Summit" · genre: modern-minimal, brand-led
+ * paper oklch(15.5% 0.008 285) · accent oklch(63.5% 0.205 24.5) Avalanche red
+ * axes: dark / grotesk-sans / warm
+ * One theme, locked dark: the Team1 wordmark ships as a knock-out (white) asset.
+ */
+@theme {
+  --color-paper: oklch(15.5% 0.008 285);
+  --color-paper-2: oklch(19.5% 0.009 285);
+  --color-paper-3: oklch(24% 0.01 285);
+
+  --color-line: oklch(100% 0 0 / 0.11);
+  --color-line-strong: oklch(100% 0 0 / 0.22);
+
+  --color-ink: oklch(96.5% 0.004 85);
+  --color-ink-2: oklch(76% 0.01 285);
+  --color-ink-3: oklch(66% 0.012 285);
+  --color-ink-4: oklch(52% 0.012 285);
+
+  --color-accent: oklch(63.5% 0.205 24.5);
+  --color-accent-hi: oklch(70% 0.19 24.5);
+  --color-accent-wash: oklch(63.5% 0.205 24.5 / 0.12);
+  --color-on-accent: oklch(15.5% 0.008 285);
+  --color-on-accent-2: oklch(15.5% 0.008 285 / 0.82);
+}
+
+:root {
+  --radius: 0;
+  /* The 60-degree slope of the Avalanche mark, reused on buttons and the hero slab. */
+  --slant: 22px;
+  --page-max: 1200px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 180ms;
+}

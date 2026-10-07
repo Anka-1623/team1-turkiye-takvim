@@ -66,9 +66,9 @@ export function ManageForm({ initial }: { initial: MyMember }) {
 
   if (stage === "deleted") {
     return (
-      <div className="rounded-2xl border border-white/[0.1] bg-[var(--color-bg-card)] p-8 text-center">
-        <h2 className="font-display text-2xl font-bold text-[var(--color-fg)]">Kayıt silindi</h2>
-        <p className="mt-2 text-sm text-[var(--color-muted)]">
+      <div className="panel">
+        <h2 className="text-3xl">Kayıt silindi</h2>
+        <p className="mt-2 text-sm text-ink-2">
           Doğum günün panelden kaldırıldı. Tekrar eklemek istersen kayıt sayfasına dönebilirsin.
         </p>
       </div>
@@ -80,7 +80,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
       <form onSubmit={handleSave} className="space-y-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">Ad</span>
+            <span className="label">Ad</span>
             <input
               required
               value={form.first_name}
@@ -89,7 +89,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
             />
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">Soyad</span>
+            <span className="label">Soyad</span>
             <input
               required
               value={form.last_name}
@@ -100,7 +100,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         </div>
 
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">Doğum günü</span>
+          <span className="label">Doğum günü</span>
           <input
             required
             type="date"
@@ -112,7 +112,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         </label>
 
         <div>
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
+          <span className="label">
             Sosyal medya bağlantıları
           </span>
           <SocialLinksEditor
@@ -122,8 +122,8 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         </div>
 
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
-            İlgi alanları <span className="text-[var(--color-muted-2)]">(opsiyonel)</span>
+          <span className="label">
+            İlgi alanları <span className="text-ink-3">(opsiyonel)</span>
           </span>
           <input
             maxLength={300}
@@ -135,8 +135,8 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         </label>
 
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
-            Not <span className="text-[var(--color-muted-2)]">(opsiyonel)</span>
+          <span className="label">
+            Not <span className="text-ink-3">(opsiyonel)</span>
           </span>
           <textarea
             maxLength={500}
@@ -147,7 +147,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
           />
         </label>
 
-        <label className="flex items-start gap-2.5 text-sm text-[var(--color-muted)]">
+        <label className="flex items-start gap-2.5 text-sm text-ink-2">
           <input
             type="checkbox"
             checked={form.notify_opt_in}
@@ -161,7 +161,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         </label>
 
         {error && (
-          <p className="rounded-lg border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] px-4 py-3 text-sm text-[var(--color-fg)]">
+          <p role="alert" className="alert">
             {error}
           </p>
         )}
@@ -170,15 +170,15 @@ export function ManageForm({ initial }: { initial: MyMember }) {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-full bg-[var(--color-brand)] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-strong)] disabled:opacity-50"
+            className="btn btn-primary"
           >
             {loading ? "Kaydediliyor…" : "Değişiklikleri kaydet"}
           </button>
-          {saved && <span className="text-sm text-[var(--color-muted)]">Kaydedildi ✓</span>}
+          {saved && <span className="text-sm text-ink-2">Kaydedildi</span>}
           <button
             type="button"
             onClick={() => setStage("confirm-delete")}
-            className="ml-auto text-sm font-medium text-[var(--color-muted)] transition hover:text-[var(--color-brand)]"
+            className="link-btn link-btn-quiet ml-auto"
           >
             Kaydı sil
           </button>
@@ -186,21 +186,21 @@ export function ManageForm({ initial }: { initial: MyMember }) {
       </form>
 
       {stage === "confirm-delete" && (
-        <div className="rounded-2xl border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] p-5">
-          <p className="text-sm text-[var(--color-fg)]">
+        <div className="panel panel-accent">
+          <p className="text-sm text-ink">
             Kaydını kalıcı olarak silmek istediğine emin misin? Bu işlem geri alınamaz.
           </p>
           <div className="mt-3 flex gap-3">
             <button
               onClick={handleDelete}
               disabled={loading}
-              className="rounded-full bg-[var(--color-brand)] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-strong)] disabled:opacity-50"
+              className="btn btn-primary"
             >
               {loading ? "Siliniyor…" : "Evet, sil"}
             </button>
             <button
               onClick={() => setStage("edit")}
-              className="rounded-full border border-white/[0.12] px-5 py-2 text-sm font-semibold text-[var(--color-fg)] transition hover:border-white/[0.24]"
+              className="btn btn-ghost"
             >
               Vazgeç
             </button>

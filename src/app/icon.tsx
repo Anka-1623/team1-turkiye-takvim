@@ -1,9 +1,13 @@
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 
 export const size = { width: 48, height: 48 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default async function Icon() {
+  const mark = await readFile(join(process.cwd(), "public/brand/avalanche-triangle.png"));
+
   return new ImageResponse(
     (
       <div
@@ -13,18 +17,14 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#06070a",
-          borderRadius: 10,
+          background: "#151518",
         }}
       >
-        <div
-          style={{
-            width: 0,
-            height: 0,
-            borderLeft: "13px solid transparent",
-            borderRight: "13px solid transparent",
-            borderBottom: "22px solid #E6212F",
-          }}
+        <img
+          src={`data:image/png;base64,${mark.toString("base64")}`}
+          width={30}
+          height={26}
+          alt=""
         />
       </div>
     ),

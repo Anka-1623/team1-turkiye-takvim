@@ -46,15 +46,15 @@ export function RegisterForm() {
 
   if (done) {
     return (
-      <div className="rounded-2xl border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] p-8 text-center">
-        <h2 className="font-display text-2xl font-bold text-[var(--color-fg)]">Eklendi 🎉</h2>
-        <p className="mt-2 text-sm text-[var(--color-muted)]">
+      <div className="panel panel-accent">
+        <h2 className="text-3xl">Eklendi</h2>
+        <p className="mt-2 text-sm text-ink-2">
           Doğum günün panelde görünüyor. Kaydını dilediğin zaman &apos;Kaydımı Yönet&apos;
           sayfasından düzenleyebilir veya silebilirsin.
         </p>
         <Link
           href="/"
-          className="mt-5 inline-block rounded-full bg-[var(--color-brand)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-strong)]"
+          className="btn btn-primary mt-6"
         >
           Panele dön
         </Link>
@@ -66,7 +66,7 @@ export function RegisterForm() {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">Ad</span>
+          <span className="label">Ad</span>
           <input
             required
             value={firstName}
@@ -76,7 +76,7 @@ export function RegisterForm() {
           />
         </label>
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">Soyad</span>
+          <span className="label">Soyad</span>
           <input
             required
             value={lastName}
@@ -88,7 +88,7 @@ export function RegisterForm() {
       </div>
 
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">Doğum günü</span>
+        <span className="label">Doğum günü</span>
         <input
           required
           type="date"
@@ -100,15 +100,15 @@ export function RegisterForm() {
       </label>
 
       <div>
-        <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
-          Sosyal medya bağlantıları <span className="text-[var(--color-brand)]">*en az bir tane</span>
+        <span className="label">
+          Sosyal medya bağlantıları <span className="text-accent">*en az bir tane</span>
         </span>
         <SocialLinksEditor value={socials} onChange={setSocials} />
       </div>
 
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
-          İlgi alanları <span className="text-[var(--color-muted-2)]">(opsiyonel)</span>
+        <span className="label">
+          İlgi alanları <span className="text-ink-3">(opsiyonel)</span>
         </span>
         <input
           maxLength={300}
@@ -117,14 +117,14 @@ export function RegisterForm() {
           className="field w-full"
           placeholder="Örn. kitap, satranç, blockchain, yürüyüş"
         />
-        <span className="mt-1.5 block text-xs text-[var(--color-muted-2)]">
+        <span className="help">
           Diğer üyeler hediye/kutlama fikri bulabilsin diye panelde görünür.
         </span>
       </label>
 
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-[var(--color-muted)]">
-          Not <span className="text-[var(--color-muted-2)]">(opsiyonel)</span>
+        <span className="label">
+          Not <span className="text-ink-3">(opsiyonel)</span>
         </span>
         <textarea
           maxLength={500}
@@ -136,7 +136,7 @@ export function RegisterForm() {
         />
       </label>
 
-      <label className="flex items-start gap-2.5 text-sm text-[var(--color-muted)]">
+      <label className="flex items-start gap-2.5 text-sm text-ink-2">
         <input
           type="checkbox"
           checked={notifyOptIn}
@@ -150,7 +150,7 @@ export function RegisterForm() {
       </label>
 
       {error && (
-        <p className="rounded-lg border border-[var(--color-brand)]/40 bg-[var(--color-brand-soft)] px-4 py-3 text-sm text-[var(--color-fg)]">
+        <p role="alert" className="alert">
           {error}
         </p>
       )}
@@ -158,7 +158,7 @@ export function RegisterForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-full bg-[var(--color-brand)] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--color-brand-strong)] disabled:opacity-50"
+        className="btn btn-primary"
       >
         {submitting ? "Ekleniyor…" : "Doğum günümü ekle"}
       </button>

@@ -21,7 +21,7 @@ export function SignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={loading}
-      className="rounded-full px-3 py-1.5 text-[var(--color-muted)] transition hover:text-[var(--color-fg)] disabled:opacity-50"
+      className="navlink"
     >
       {loading ? "Çıkış yapılıyor…" : "Çıkış yap"}
     </button>
