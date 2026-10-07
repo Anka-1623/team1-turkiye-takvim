@@ -19,13 +19,22 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
 
 ### Giriş sistemi
 
-Şifre yok — `/giris` sayfasında mailini girersin, Supabase Auth sana tek
-kullanımlık bir giriş linki yollar, linke tıklayınca oturum açılır
-(magic link / OTP). Panel (`/`) herkese açık kalır; sadece kayıt
-(`/kayit`) ve kaydını düzenleme (`/kaydim`) giriş ister. Önceden Member
-Portal ID ile (login yokken) kaydolmuş üyeler `/kaydim`'de o ID'yi
-girerek eski kayıtlarını yeni hesaplarına bağlayabilir
-(`claim_legacy_member`).
+Şifre yok. `/giris` sayfasında mailini girersin; sunucu (`/api/auth/login`)
+Supabase Admin API ile tek kullanımlık bir giriş linki üretir ve tasarlanmış
+giriş mailini Brevo ile gönderir. Linke tıklayınca `/auth/confirm` token'ı
+oturuma çevirir. Link, isteğin geldiği alan adına kurulur, yani Supabase'deki
+Site URL ayarına bağlı değildir (localhost'a yönlenme sorunu burada yaşanmaz).
+Kötüye kullanımı sınırlamak için e-posta başına 15 dakikada 3, toplamda saatte
+120 giriş maili izni vardır (`login_email_log` tablosu). Sunucu tarafı mail
+kurulamazsa form, Supabase'in yerleşik magic link'ine (`/auth/callback`) düşer.
+
+Panel (`/`) herkese açık kalır; sadece kayıt (`/kayit`) ve kaydını düzenleme
+(`/kaydim`) giriş ister. Önceden Member Portal ID ile (login yokken) kaydolmuş
+üyeler `/kaydim`'de o ID'yi girerek eski kayıtlarını yeni hesaplarına
+bağlayabilir (`claim_legacy_member`).
+
+Tüm mailler (giriş, hatırlatma, kutlama, yönetici özeti) `src/lib/emailLayout.ts`
+içindeki ortak tasarımdan üretilir.
 
 ### Bildirimler
 
@@ -74,6 +83,7 @@ npm run dev
 | `BREVO_API_KEY` | [brevo.com](https://brevo.com) → SMTP & API → API Keys — boş bırakılırsa mailler sessizce atlanır |
 | `MAIL_FROM_EMAIL` | Brevo → Settings → Senders'da doğruladığın bir adres olmalı |
 | `MAIL_FROM_NAME` | Kozmetik, boş bırakılırsa `Team1 Türkiye` kullanılır |
+| `NEXT_PUBLIC_SITE_URL` | İsteğe bağlı. Cron mailleri ve görseller için kanonik adres (ör. `https://team1-turkiye-takvim.vercel.app`); boşsa Vercel'in production alan adı kullanılır |
 | `ADMIN_NOTIFY_EMAILS` | Günlük özeti alacak adres(ler), virgülle ayrılmış |
 
 `.env*` dosyaları `.gitignore`'da (`.env.example` hariç) — gerçek key'ler

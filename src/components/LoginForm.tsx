@@ -3,10 +3,12 @@
 import { useState, type FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export function LoginForm({ next }: { next: string }) {
+export function LoginForm({ next, expiredLink = false }: { next: string; expiredLink?: boolean }) {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    expiredLink ? "Giriş linki geçersiz ya da süresi dolmuş. Aşağıdan yeni bir link iste." : null
+  );
   const [sent, setSent] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
@@ -14,20 +16,39 @@ export function LoginForm({ next }: { next: string }) {
     setError(null);
     setSubmitting(true);
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
-      },
-    });
-
-    setSubmitting(false);
-    if (authError) {
-      setError("Bir şeyler ters gitti, tekrar dener misin?");
-      return;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), next }),
+      });
+      if (res.status === 429) {
+        setError("Çok sık denedin. Birkaç dakika sonra tekrar dene.");
+        return;
+      }
+      if (res.status === 400) {
+        setError("Geçerli bir e-posta adresi gir.");
+        return;
+      }
+      if (res.status >= 500) {
+        // Our own mail pipeline is unavailable: fall back to Supabase's built-in magic link.
+        const { error: authError } = await createClient().auth.signInWithOtp({
+          email: email.trim(),
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+          },
+        });
+        if (authError) {
+          setError("Bir şeyler ters gitti, tekrar dener misin?");
+          return;
+        }
+      }
+      setSent(true);
+    } catch {
+      setError("Bağlantı kurulamadı, tekrar dener misin?");
+    } finally {
+      setSubmitting(false);
     }
-    setSent(true);
   }
 
   if (sent) {

@@ -9,16 +9,16 @@ export const metadata: Metadata = {
 export default async function GirisPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; error?: string }>;
 }) {
-  const { next } = await searchParams;
+  const { next, error } = await searchParams;
 
   return (
     <FormPage
       title="Mailinle giriş yap"
       lead="Doğum günü kaydını eklemek veya düzenlemek için giriş yapman gerekiyor. Panel herkese açık kalıyor."
     >
-      <LoginForm next={next && next.startsWith("/") ? next : "/kaydim"} />
+      <LoginForm next={next && next.startsWith("/") ? next : "/kaydim"} expiredLink={error === "1"} />
     </FormPage>
   );
 }

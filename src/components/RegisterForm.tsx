@@ -144,8 +144,7 @@ export function RegisterForm() {
           className="mt-0.5"
         />
         <span>
-          Diğer üyelerin doğum günü yaklaşınca (7 ve 3 gün kala, bir de günü geldiğinde) bana e-posta ile
-          hatırlat.
+          Doğum günü e-postaları: diğer üyelerin doğum günü yaklaşırken (7 ve 3 gün kala, bir de günü geldiğinde) hatırlatma, kendi doğum günümde de bir kutlama almak istiyorum.
         </span>
       </label>
 

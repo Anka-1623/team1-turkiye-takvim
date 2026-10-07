@@ -183,3 +183,18 @@ create table if not exists public.birthday_notifications (
 );
 alter table public.birthday_notifications enable row level security;
 revoke all on public.birthday_notifications from anon, authenticated;
+
+-- Rate-limit log for the custom login e-mail route (/api/auth/login). Only
+-- the server's service-role client touches it; no policies are granted on
+-- purpose.
+create table if not exists public.login_email_log (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists login_email_log_email_created_idx
+  on public.login_email_log (email, created_at desc);
+create index if not exists login_email_log_created_idx
+  on public.login_email_log (created_at desc);
+alter table public.login_email_log enable row level security;
+revoke all on public.login_email_log from anon, authenticated;

@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { ageTurning, daysUntilNextBirthday, formatBirthdayLong } from "@/lib/date";
+import { C, chips, emailShell, escapeHtml, heading, row } from "@/lib/emailLayout";
 import { platformLabel } from "@/lib/socials";
 import type { Member } from "@/lib/types";
 
@@ -27,60 +28,46 @@ export async function buildDigest(): Promise<{ today: Member[]; soon: Member[] }
   return { today, soon };
 }
 
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
+export { escapeHtml } from "@/lib/emailLayout";
+
+const FONT = "-apple-system,'Segoe UI',Helvetica,Arial,sans-serif";
 
 function memberRowHtml(m: Member, showAge: boolean): string {
-  const name = escapeHtml(`${m.first_name} ${m.last_name}`);
-  const age = showAge ? ` — ${ageTurning(m.birthday)} yaşına giriyor` : "";
-  const links = m.socials
-    .map(
-      (s) =>
-        `<a href="${escapeHtml(s.url)}" style="color:#E6212F;text-decoration:none;">${escapeHtml(
-          platformLabel(s.platform)
-        )}</a>`
-    )
-    .join(" &nbsp;·&nbsp; ");
-  return `
-    <tr>
-      <td style="padding:10px 0;border-bottom:1px solid #262022;">
-        <div style="font-family:sans-serif;font-size:16px;font-weight:700;color:#F2EDEA;">${name}${age}</div>
-        <div style="font-family:sans-serif;font-size:13px;color:#9A9296;margin-top:2px;">${formatBirthdayLong(
-          m.birthday
-        )}${links ? " · " + links : ""}</div>
-      </td>
-    </tr>`;
+  const name = `${m.first_name} ${m.last_name}`;
+  const age = showAge ? `, ${ageTurning(m.birthday)} yaşına giriyor` : "";
+  const links = chips(m.socials.map((s) => ({ label: platformLabel(s.platform), url: s.url })));
+  return `<tr><td style="padding:16px 0;border-top:1px solid ${C.line};">
+    <div style="font:700 18px/24px ${FONT};letter-spacing:-.3px;color:${C.ink};">${escapeHtml(name)}</div>
+    <div style="margin-top:2px;font:400 14px/20px ${FONT};color:${C.ink2};">${formatBirthdayLong(m.birthday)}${age}</div>
+    ${links ? `<div style="margin-top:10px;">${links}</div>` : ""}
+  </td></tr>`;
 }
 
-export function renderDigestEmailHtml(today: Member[], soon: Member[]): string {
-  const sections: string[] = [];
-  if (today.length > 0) {
-    sections.push(`
-      <h2 style="font-family:sans-serif;color:#F2EDEA;font-size:18px;margin:24px 0 8px;">🎉 Bugün doğum günü olanlar</h2>
-      <table style="width:100%;border-collapse:collapse;">${today.map((m) => memberRowHtml(m, true)).join("")}</table>
-    `);
-  }
-  if (soon.length > 0) {
-    sections.push(`
-      <h2 style="font-family:sans-serif;color:#F2EDEA;font-size:18px;margin:24px 0 8px;">📅 ${LEAD_DAYS} gün sonra doğum günü olanlar</h2>
-      <table style="width:100%;border-collapse:collapse;">${soon.map((m) => memberRowHtml(m, false)).join("")}</table>
-    `);
-  }
+function section(title: string, members: Member[], showAge: boolean): string {
+  return row(
+    `<h2 style="margin:0 0 4px;font:700 24px/28px ${FONT};letter-spacing:-.6px;color:${C.ink};">${title}</h2>
+     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${members
+       .map((m) => memberRowHtml(m, showAge))
+       .join("")}</table>`,
+    "32px 0 0"
+  );
+}
 
-  return `<!doctype html>
-<html lang="tr">
-  <body style="margin:0;padding:0;background:#0B0607;">
-    <div style="max-width:520px;margin:0 auto;padding:32px 20px;">
-      <div style="font-family:sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E6212F;font-weight:700;">Team1 Türkiye</div>
-      <div style="font-family:sans-serif;font-size:13px;color:#9A9296;margin-top:2px;">Doğum günü hatırlatması</div>
-      ${sections.join("")}
-      <div style="font-family:sans-serif;font-size:12px;color:#635C5F;margin-top:32px;">Bu e-posta Team1 Türkiye doğum günü takviminin günlük otomatik özetidir.</div>
-    </div>
-  </body>
-</html>`;
+export function renderDigestEmailHtml(today: Member[], soon: Member[], siteUrl: string): string {
+  const rows = [
+    row(heading("Günlük doğum günü özeti"), "8px 0 0"),
+    today.length > 0 ? section("Bugün doğum günü olanlar", today, true) : "",
+    soon.length > 0 ? section(`${LEAD_DAYS} gün sonra doğum günü olanlar`, soon, false) : "",
+  ].join("");
+
+  return emailShell({
+    title: "Günlük doğum günü özeti",
+    preheader:
+      today.length > 0
+        ? `Bugün doğum günü olan ${today.length} kişi var.`
+        : `${LEAD_DAYS} gün sonra doğum günü olan ${soon.length} kişi var.`,
+    siteUrl,
+    rows,
+    footer: "Bu e-posta Team1 Türkiye Doğum Günü Takvimi'nin günlük otomatik özetidir.",
+  });
 }
