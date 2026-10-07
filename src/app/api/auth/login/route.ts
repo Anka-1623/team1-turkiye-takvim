@@ -54,6 +54,7 @@ export async function POST(req: Request) {
   const { data, error } = await admin.auth.admin.generateLink({ type: "magiclink", email });
   const tokenHash = data?.properties?.hashed_token;
   if (error || !tokenHash) {
+    console.error("[auth/login] generateLink failed:", error?.message ?? "no hashed_token");
     return NextResponse.json({ error: "link_failed" }, { status: 500 });
   }
 
@@ -67,8 +68,12 @@ export async function POST(req: Request) {
       subject: LOGIN_EMAIL_SUBJECT,
       html: renderLoginEmailHtml({ link, siteUrl: origin }),
     });
-    if (!result.sent) return NextResponse.json({ error: "mail_failed" }, { status: 502 });
-  } catch {
+    if (!result.sent) {
+      console.error("[auth/login] mail not sent:", result.reason);
+      return NextResponse.json({ error: "mail_failed" }, { status: 502 });
+    }
+  } catch (err) {
+    console.error("[auth/login] mail provider error:", err instanceof Error ? err.message : err);
     return NextResponse.json({ error: "mail_failed" }, { status: 502 });
   }
 

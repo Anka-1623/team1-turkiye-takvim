@@ -4,8 +4,27 @@ import { genitive } from "@/lib/tr";
 import type { Member } from "@/lib/types";
 
 /** Hero slab: the next birthday on the calendar, or today's. `sorted` must be ordered by days left. */
-export function NextBirthday({ sorted }: { sorted: Member[] }) {
+export function NextBirthday({
+  sorted,
+  signedInMember = false,
+}: {
+  sorted: Member[];
+  signedInMember?: boolean;
+}) {
   const style = { "--i": 2 } as CSSProperties;
+
+  if (sorted.length === 0 && signedInMember) {
+    return (
+      <aside className="slab rise" style={style} aria-label="Henüz başka üye yok">
+        <p className="slab-label">Kaydın tamam</p>
+        <div className="slab-main">
+          <span className="slab-word">Henüz başka üye yok.</span>
+        </div>
+        <p className="slab-sub">Diğer üyeler kaydolunca doğum günleri burada görünür.</p>
+        <span className="slab-mark" aria-hidden="true" />
+      </aside>
+    );
+  }
 
   if (sorted.length === 0) {
     return (

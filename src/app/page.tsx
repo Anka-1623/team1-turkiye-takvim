@@ -4,6 +4,7 @@ import { BirthdayCard } from "@/components/BirthdayCard";
 import { NextBirthday } from "@/components/NextBirthday";
 import { daysUntilNextBirthday, istanbulToday, nextOccurrenceYear } from "@/lib/date";
 import { fetchAllMembers } from "@/lib/digest";
+import { createClient } from "@/lib/supabase/server";
 import type { Member } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +36,18 @@ function groupByMonth(sorted: Member[]): Group[] {
 }
 
 export default async function HomePage() {
-  const members = await fetchAllMembers();
+  // A signed-in member already knows their own birthday, so the panel shows everyone else's.
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let ownId: string | null = null;
+  if (user) {
+    const { data } = await supabase.rpc("get_my_member");
+    ownId = (data?.[0] as { id: string } | undefined)?.id ?? null;
+  }
+
+  const members = (await fetchAllMembers()).filter((m) => m.id !== ownId);
   const sorted = [...members].sort(
     (a, b) => daysUntilNextBirthday(a.birthday) - daysUntilNextBirthday(b.birthday)
   );
@@ -78,7 +90,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <NextBirthday sorted={sorted} />
+          <NextBirthday sorted={sorted} signedInMember={ownId !== null} />
         </div>
       </section>
 
