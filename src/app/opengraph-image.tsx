@@ -7,7 +7,7 @@ export const contentType = "image/png";
 export const alt = "Team1 Türkiye Doğum Günü Takvimi";
 
 export default async function OpengraphImage() {
-  const mark = await readFile(join(process.cwd(), "public/brand/avalanche-triangle.png"));
+  const mark = await readFile(join(process.cwd(), "public/brand/team1-turkiye-wordmark.png"));
 
   return new ImageResponse(
     (
@@ -21,7 +21,7 @@ export default async function OpengraphImage() {
           background: "#151518",
         }}
       >
-        {/* The slope of the Avalanche mark, as a slab bleeding off the right edge. */}
+        {/* A sloped red slab bleeding off the right edge. */}
         <div
           style={{
             position: "absolute",
@@ -46,7 +46,7 @@ export default async function OpengraphImage() {
         >
           <img
             src={`data:image/png;base64,${mark.toString("base64")}`}
-            width={64}
+            width={376}
             height={56}
             alt=""
           />
