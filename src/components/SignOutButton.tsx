@@ -17,7 +17,12 @@ export function SignOutButton() {
   }
 
   return (
-    <button type="button" onClick={handleSignOut} disabled={loading} className="navlink">
+    <button
+      type="button"
+      onClick={handleSignOut}
+      disabled={loading}
+      className="navlink"
+    >
       {loading ? "Çıkış yapılıyor…" : "Çıkış yap"}
     </button>
   );
