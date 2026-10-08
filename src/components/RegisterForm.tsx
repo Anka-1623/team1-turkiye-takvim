@@ -15,9 +15,9 @@ export function RegisterForm() {
   const [interests, setInterests] = useState("");
   const [note, setNote] = useState("");
   const [notifyOptIn, setNotifyOptIn] = useState(true);
-  const [submitting, setSubmitting] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(true);
+  const [done, setDone] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
