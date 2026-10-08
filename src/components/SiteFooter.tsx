@@ -1,32 +1,36 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRightIcon } from "@/components/Icons";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function SiteFooter() {
   return (
-    <footer className="site-footer">
-      <div className="shell site-footer__inner">
-        <div className="site-footer__about">
+    <footer className="mt-10 border-t border-line">
+      <div className="shell grid gap-8 py-10 md:grid-cols-[1fr_auto] md:items-end">
+        <div className="flex items-start gap-4">
           <Image
-            src="/brand/team1/team1turkiye.svg"
-            alt="Team1 Türkiye"
-            width={1727}
-            height={257}
-            className="logo logo--chapter"
+            src="/brand/avalanche-triangle.png"
+            alt=""
+            width={28}
+            height={25}
+            className="mt-0.5 h-6 w-auto shrink-0"
           />
-          <p>Team1 Türkiye topluluğu için, üyeler tarafından yapıldı.</p>
+          <p className="max-w-[38ch] text-[0.9375rem] leading-relaxed text-ink-2">
+            Avalanche Team1 Türkiye topluluğu için, üyeler tarafından yapıldı.
+          </p>
         </div>
-        <nav aria-label="Alt menü" className="site-footer__nav">
-          <Link href="/">Panel</Link>
-          <Link href="/kaydim">Kaydımı Yönet</Link>
-          <a href="https://github.com/Anka-1623/team1-turkiye-takvim" target="_blank" rel="noreferrer noopener">
-            Kaynak kod
-            <ArrowUpRightIcon size={14} />
-            <span className="sr-only">(yeni sekmede açılır)</span>
+        <nav aria-label="Alt menü" className="flex flex-wrap gap-x-7 gap-y-2 text-[0.9375rem]">
+          <Link href="/" className="py-1 text-ink-2 transition-colors hover:text-ink">
+            Panel
+          </Link>
+          <Link href="/kaydim" className="py-1 text-ink-2 transition-colors hover:text-ink">
+            Kaydımı Yönet
+          </Link>
+          <a
+            href="https://github.com/Anka-1623/team1-turkiye-takvim"
+            className="py-1 text-ink-2 transition-colors hover:text-ink"
+          >
+            Kaynak kod ↗
           </a>
         </nav>
-        <ThemeToggle />
       </div>
     </footer>
   );

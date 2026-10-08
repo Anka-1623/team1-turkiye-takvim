@@ -1,6 +1,5 @@
 "use client";
 
-import { XIcon } from "@/components/Icons";
 import { MAX_SOCIAL_LINKS, SOCIAL_PLATFORMS } from "@/lib/socials";
 import type { SocialLink } from "@/lib/types";
 
@@ -22,14 +21,13 @@ export function SocialLinksEditor({ value, onChange }: Props) {
   }
 
   return (
-    <div className="social-list">
+    <div className="space-y-2.5">
       {value.map((s, i) => (
-        <div key={i} className="social-row">
+        <div key={i} className="flex gap-2">
           <select
             value={s.platform}
             onChange={(e) => update(i, { platform: e.target.value })}
-            className="field"
-            aria-label={`${i + 1}. bağlantının platformu`}
+            className="field w-36 shrink-0"
           >
             {SOCIAL_PLATFORMS.map((p) => (
               <option key={p.value} value={p.value}>
@@ -43,20 +41,35 @@ export function SocialLinksEditor({ value, onChange }: Props) {
             placeholder="https://..."
             value={s.url}
             onChange={(e) => update(i, { url: e.target.value })}
-            className="field"
-            aria-label={`${i + 1}. bağlantının adresi`}
+            className="field flex-1"
           />
-          <button type="button" onClick={() => remove(i)} aria-label="Bağlantıyı kaldır" className="icon-btn">
-            <XIcon />
+          <button
+            type="button"
+            onClick={() => remove(i)}
+            aria-label="Bağlantıyı kaldır"
+            className="btn btn-ghost shrink-0 px-3.5"
+          >
+            ✕
           </button>
         </div>
       ))}
-      {value.length < MAX_SOCIAL_LINKS && (
-        <div>
-          <button type="button" onClick={add} className="btn btn-secondary btn-sm">
-            + Bağlantı ekle
-          </button>
-        </div>
+      {value.length === 0 && (
+        <button
+          type="button"
+          onClick={add}
+          className="field w-full text-left text-ink-3"
+        >
+          + Bağlantı ekle
+        </button>
+      )}
+      {value.length > 0 && value.length < MAX_SOCIAL_LINKS && (
+        <button
+          type="button"
+          onClick={add}
+          className="link-btn"
+        >
+          + Bağlantı ekle
+        </button>
       )}
     </div>
   );

@@ -1,17 +1,18 @@
-import type { Metadata, Viewport } from "next";
-import { Kanit } from "next/font/google";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import { NavBar } from "@/components/NavBar";
 import { SiteFooter } from "@/components/SiteFooter";
-import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
 
-// Team1 global type: Kanit Medium 500 for headings, Kanit Light 300 for body.
 // latin-ext carries ğ ş ı İ, which Turkish needs.
-const kanit = Kanit({
-  variable: "--nf-kanit",
+const sans = Geist({
+  variable: "--nf-sans",
   subsets: ["latin", "latin-ext"],
-  weight: ["300", "500"],
-  display: "swap",
+});
+
+const mono = Geist_Mono({
+  variable: "--nf-mono",
+  subsets: ["latin", "latin-ext"],
 });
 
 const siteUrl =
@@ -25,23 +26,13 @@ export const metadata: Metadata = {
     template: "%s - Team1 Türkiye",
   },
   description:
-    "Team1 Türkiye üyeleri için doğum günü takvimi: bilgini ekle, yaklaşan doğum günlerini gör, kimseyi kutlamayı kaçırma.",
+    "Avalanche Team1 Türkiye üyeleri için doğum günü takvimi: bilgini ekle, yaklaşan doğum günlerini gör, kimseyi kutlamayı kaçırma.",
 };
-
-export const viewport: Viewport = {
-  themeColor: "#000000",
-};
-
-// Dark is the default; a saved choice is applied before first paint so the page never flashes.
-const themeInit = `try{if(localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)})==="light")document.documentElement.dataset.theme="light"}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr" data-theme="dark" className={kanit.variable} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
-      </head>
-      <body>
+    <html lang="tr" className={`${sans.variable} ${mono.variable} h-full`}>
+      <body className="flex min-h-full flex-col antialiased">
         <a href="#icerik" className="skip">
           İçeriğe geç
         </a>

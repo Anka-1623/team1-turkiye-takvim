@@ -1,6 +1,6 @@
 /**
  * Shared e-mail layout. Same language as the site: ink-black paper, the
- * Team1 red slab, sharp corners, the mark's 60-degree slope. Table
+ * Avalanche red slab, sharp corners, the mark's 60-degree slope. Table
  * based with inline styles because mail clients ignore most modern CSS;
  * the slope uses the CSS border-triangle trick and falls back to a plain
  * rectangle in Outlook.
