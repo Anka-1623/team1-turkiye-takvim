@@ -15,14 +15,6 @@ export async function NavBar() {
       <div className="shell flex h-16 items-center justify-between gap-3">
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image
-            src="/brand/avalanche-triangle.png"
-            alt=""
-            width={22}
-            height={20}
-            priority
-            className="hidden h-5 w-auto sm:block"
-          />
-          <Image
             src="/brand/team1-turkiye-wordmark.png"
             alt="Team1 Türkiye"
             width={136}

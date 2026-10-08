@@ -21,7 +21,6 @@ export function NextBirthday({
           <span className="slab-word">Henüz başka üye yok.</span>
         </div>
         <p className="slab-sub">Diğer üyeler kaydolunca doğum günleri burada görünür.</p>
-        <span className="slab-mark" aria-hidden="true" />
       </aside>
     );
   }
@@ -34,7 +33,6 @@ export function NextBirthday({
           <span className="slab-word">İlk kayıt sende.</span>
         </div>
         <p className="slab-sub">Doğum gününü ekle, diğer üyeler seni kutlamayı kaçırmasın.</p>
-        <span className="slab-mark" aria-hidden="true" />
       </aside>
     );
   }
@@ -67,7 +65,6 @@ export function NextBirthday({
         </p>
       </div>
 
-      <span className="slab-mark" aria-hidden="true" />
     </aside>
   );
 }

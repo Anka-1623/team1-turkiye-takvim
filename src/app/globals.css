@@ -379,18 +379,6 @@
     font-size: 1rem;
     color: var(--color-on-accent-2);
   }
-  .slab-mark {
-    position: absolute;
-    z-index: -1;
-    right: -10%;
-    bottom: -16%;
-    width: 72%;
-    aspect-ratio: 941 / 829;
-    background: var(--color-on-accent);
-    opacity: 0.1;
-    -webkit-mask: url("/brand/avalanche-triangle.png") center / contain no-repeat;
-    mask: url("/brand/avalanche-triangle.png") center / contain no-repeat;
-  }
 
   /* ---------- Home: month strip ---------- */
   .months {

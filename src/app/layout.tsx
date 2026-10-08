@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s - Team1 Türkiye",
   },
   description:
-    "Avalanche Team1 Türkiye üyeleri için doğum günü takvimi: bilgini ekle, yaklaşan doğum günlerini gör, kimseyi kutlamayı kaçırma.",
+    "Team1 Türkiye üyeleri için doğum günü takvimi: bilgini ekle, yaklaşan doğum günlerini gör, kimseyi kutlamayı kaçırma.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
