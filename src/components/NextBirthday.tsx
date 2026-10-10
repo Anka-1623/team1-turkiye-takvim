@@ -3,15 +3,62 @@ import { ageTurning, daysUntilNextBirthday, formatBirthdayLong } from "@/lib/dat
 import { genitive } from "@/lib/tr";
 import type { Member } from "@/lib/types";
 
-/** Hero slab: the next birthday on the calendar, or today's. `sorted` must be ordered by days left. */
+const fullName = (m: Member) => `${m.first_name} ${m.last_name}`;
+
+/**
+ * Hero slab: everyone whose birthday is today, otherwise the next birthday on the calendar.
+ * `today` is everyone born on today's date (including the signed-in member, so their own name
+ * shows on their day); `sorted` is the rest, ordered by days left.
+ */
 export function NextBirthday({
+  today,
   sorted,
   signedInMember = false,
 }: {
+  today: Member[];
   sorted: Member[];
   signedInMember?: boolean;
 }) {
   const style = { "--i": 2 } as CSSProperties;
+
+  if (today.length > 0) {
+    const [only] = today;
+    return (
+      <aside
+        className="slab rise"
+        style={style}
+        aria-label={today.length === 1 ? "Bugün doğum günü" : "Bugün doğum günü olanlar"}
+      >
+        <p className="slab-label">Doğum günü</p>
+
+        <div className="slab-main">
+          <span className="slab-word">Bugün</span>
+        </div>
+
+        {today.length === 1 ? (
+          <div>
+            <p className="slab-name">{genitive(fullName(only))} doğum günü</p>
+            <p className="slab-sub">
+              {formatBirthdayLong(only.birthday)}, {ageTurning(only.birthday)} yaşına giriyor
+            </p>
+          </div>
+        ) : (
+          <div>
+            <ul className="slab-names">
+              {today.map((m) => (
+                <li key={m.id} className="slab-name">
+                  {fullName(m)}
+                </li>
+              ))}
+            </ul>
+            <p className="slab-sub">
+              {formatBirthdayLong(only.birthday)}, {today.length} kişinin doğum günü
+            </p>
+          </div>
+        )}
+      </aside>
+    );
+  }
 
   if (sorted.length === 0 && signedInMember) {
     return (
@@ -43,11 +90,11 @@ export function NextBirthday({
 
   return (
     <aside className="slab rise" style={style} aria-label="Sıradaki doğum günü">
-      <p className="slab-label">{days === 0 ? "Bugün" : "Sıradaki doğum günü"}</p>
+      <p className="slab-label">Sıradaki doğum günü</p>
 
       <div className="slab-main">
-        {days <= 1 ? (
-          <span className="slab-word">{days === 0 ? "Bugün" : "Yarın"}</span>
+        {days === 1 ? (
+          <span className="slab-word">Yarın</span>
         ) : (
           <>
             <span className="slab-num">{days}</span>
@@ -57,14 +104,12 @@ export function NextBirthday({
       </div>
 
       <div>
-        <p className="slab-name">{genitive(`${first.first_name} ${first.last_name}`)} doğum günü</p>
+        <p className="slab-name">{genitive(fullName(first))} doğum günü</p>
         <p className="slab-sub">
           {formatBirthdayLong(first.birthday)}
-          {days === 0 ? `, ${ageTurning(first.birthday)} yaşına giriyor` : ""}
           {others > 0 ? ` (aynı gün ${others} kişi daha)` : ""}
         </p>
       </div>
-
     </aside>
   );
 }

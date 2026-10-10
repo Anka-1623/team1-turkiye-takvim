@@ -13,6 +13,8 @@ const MONTH_SHORT = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "
 
 const monthOf = (birthday: string) => Number(birthday.slice(5, 7));
 
+const fullName = (m: Member) => `${m.first_name} ${m.last_name}`;
+
 function monthName(month: number): string {
   return new Intl.DateTimeFormat("tr-TR", { month: "long", timeZone: "UTC" }).format(
     new Date(Date.UTC(2000, month - 1, 1))
@@ -47,7 +49,12 @@ export default async function HomePage() {
     ownId = (data?.[0] as { id: string } | undefined)?.id ?? null;
   }
 
-  const members = (await fetchAllMembers()).filter((m) => m.id !== ownId);
+  const everyone = await fetchAllMembers();
+  const members = everyone.filter((m) => m.id !== ownId);
+  // On a birthday the hero names everyone born that day, the signed-in member included.
+  const bornToday = everyone
+    .filter((m) => daysUntilNextBirthday(m.birthday) === 0)
+    .sort((a, b) => fullName(a).localeCompare(fullName(b), "tr"));
   const sorted = [...members].sort(
     (a, b) => daysUntilNextBirthday(a.birthday) - daysUntilNextBirthday(b.birthday)
   );
@@ -77,20 +84,16 @@ export default async function HomePage() {
               Üyelerin doğum günleri tek yerde. Kaydını ekle, yaklaşanları gör, kimseyi kutlamayı
               kaçırma.
             </p>
-            <div
-              className="rise flex flex-wrap items-center gap-3"
-              style={{ "--i": 3 } as CSSProperties}
-            >
-              <Link href="/kayit" className="btn btn-primary">
-                Doğum günümü ekle
-              </Link>
-              <Link href="/kaydim" className="btn btn-ghost">
-                Kaydımı yönet
-              </Link>
-            </div>
+            {ownId === null && (
+              <div className="rise" style={{ "--i": 3 } as CSSProperties}>
+                <Link href="/kayit" className="btn btn-primary">
+                  Doğum günümü ekle
+                </Link>
+              </div>
+            )}
           </div>
 
-          <NextBirthday sorted={sorted} signedInMember={ownId !== null} />
+          <NextBirthday today={bornToday} sorted={sorted} signedInMember={ownId !== null} />
         </div>
       </section>
 
