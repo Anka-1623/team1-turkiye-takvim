@@ -22,7 +22,7 @@ type Admin = NonNullable<ReturnType<typeof createAdminClient>>;
 /**
  * Claims (member, milestone, year) in birthday_notifications, sends, and
  * releases the claim again if the mail did not actually go out, so a
- * missing Brevo key or a transient error doesn't silently burn the
+ * missing Resend key or a transient error doesn't silently burn the
  * reminder for the whole year. Returns true when a mail was sent.
  */
 async function sendOnce(
@@ -63,7 +63,7 @@ async function sendOnce(
  * cross-user data (auth.users emails, other members' notify_opt_in) that
  * RLS would otherwise block. Silently returns a skip reason when
  * SUPABASE_SERVICE_ROLE_KEY isn't configured yet, mirroring how the admin
- * digest degrades when BREVO_API_KEY is missing.
+ * digest degrades when RESEND_API_KEY is missing.
  */
 async function sendMemberNotifications() {
   const admin = createAdminClient();
