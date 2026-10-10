@@ -12,7 +12,7 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
 - **Supabase (Postgres + Auth)** — tek tablo (`members`) + bir bildirim
   log tablosu (`birthday_notifications`). Sahiplik gerçek bir hesaba
   (magic-link login) bağlı; RLS `auth.uid()` üzerinden kontrol ediyor.
-- **Brevo** — (a) admin'e günlük özet (bugün + 3 gün sonra olanlar) ve
+- **Resend** — (a) admin'e günlük özet (bugün + 3 gün sonra olanlar) ve
   (b) bildirimi açan üyelere, bir teammate'in doğum günü 7/3/0 gün
   kala kişiye özel hatırlatma.
 - **Vercel Cron** — her ikisini de her gün tetikler (`vercel.json`).
@@ -21,7 +21,7 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
 
 Şifre yok. `/giris` sayfasında mailini girersin; sunucu (`/api/auth/login`)
 Supabase Admin API ile tek kullanımlık bir giriş linki üretir ve tasarlanmış
-giriş mailini Brevo ile gönderir. Linke tıklayınca `/auth/confirm` token'ı
+giriş mailini Resend ile gönderir. Linke tıklayınca `/auth/confirm` token'ı
 oturuma çevirir. Link, isteğin geldiği alan adına kurulur, yani Supabase'deki
 Site URL ayarına bağlı değildir (localhost'a yönlenme sorunu burada yaşanmaz).
 Kötüye kullanımı sınırlamak için e-posta başına 15 dakikada 3, toplamda saatte
@@ -80,8 +80,8 @@ npm run dev
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Settings → API → `service_role` — sadece 7/3/0 gün üye bildirimleri için, yoksa o kısım atlanır |
 | `CRON_SECRET` | Rastgele bir string üret (`openssl rand -hex 24`) |
-| `BREVO_API_KEY` | [brevo.com](https://brevo.com) → SMTP & API → API Keys — boş bırakılırsa mailler sessizce atlanır |
-| `MAIL_FROM_EMAIL` | Brevo → Settings → Senders'da doğruladığın bir adres olmalı |
+| `RESEND_API_KEY` | [resend.com](https://resend.com) → API Keys ("Sending access") — boş bırakılırsa mailler sessizce atlanır |
+| `MAIL_FROM_EMAIL` | Resend → Domains'te doğruladığın bir alan adındaki adres olmalı (ör. `team1turkiye@edutask.app`) |
 | `MAIL_FROM_NAME` | Kozmetik, boş bırakılırsa `Team1 Türkiye` kullanılır |
 | `NEXT_PUBLIC_SITE_URL` | İsteğe bağlı. Cron mailleri ve görseller için kanonik adres (ör. `https://team1-turkiye-takvim.vercel.app`); boşsa Vercel'in production alan adı kullanılır |
 | `ADMIN_NOTIFY_EMAILS` | Günlük özeti alacak adres(ler), virgülle ayrılmış |
