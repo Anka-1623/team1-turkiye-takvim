@@ -176,6 +176,90 @@
     background: var(--color-accent);
   }
 
+  /* ---------- Profile menu (navbar, signed in) ---------- */
+  .profile {
+    position: relative;
+    margin-left: 0.25rem;
+  }
+  .profile-trigger {
+    gap: 0.5rem;
+  }
+  .profile-avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    background: var(--color-accent-wash);
+    border: 1px solid var(--color-accent);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-accent-hi);
+  }
+  .profile-chevron {
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .profile-trigger[aria-expanded="true"] {
+    color: var(--color-ink);
+  }
+  .profile-trigger[aria-expanded="true"] .profile-chevron {
+    transform: rotate(180deg);
+  }
+  .profile-panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 1px);
+    z-index: 40;
+    display: grid;
+    min-width: 15rem;
+    max-width: calc(100vw - 2.5rem);
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-line-strong);
+    box-shadow: 0 18px 40px oklch(0% 0 0 / 0.45);
+  }
+  .profile-email {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    overflow-wrap: anywhere;
+  }
+  .profile-email-label {
+    font-size: 0.75rem;
+    color: var(--color-ink-3);
+  }
+  .profile-item {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    background: none;
+    border: 0;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-align: left;
+    color: var(--color-ink-2);
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out);
+  }
+  .profile-item:hover:not(:disabled),
+  .profile-item[aria-current="page"] {
+    background: var(--color-paper-3);
+    color: var(--color-ink);
+  }
+  .profile-item:disabled {
+    opacity: 0.5;
+  }
+  .profile-item:focus-visible {
+    outline-offset: -2px;
+  }
+
   .link {
     color: var(--color-accent);
     text-decoration: underline;
@@ -373,6 +457,10 @@
     letter-spacing: -0.03em;
     line-height: 1.05;
     overflow-wrap: anywhere;
+  }
+  .slab-names {
+    display: grid;
+    gap: 0.4rem;
   }
   .slab-sub {
     margin-top: 0.35rem;

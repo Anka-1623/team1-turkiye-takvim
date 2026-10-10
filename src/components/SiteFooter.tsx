@@ -21,9 +21,6 @@ export function SiteFooter() {
           <Link href="/" className="py-1 text-ink-2 transition-colors hover:text-ink">
             Panel
           </Link>
-          <Link href="/kaydim" className="py-1 text-ink-2 transition-colors hover:text-ink">
-            Kaydımı Yönet
-          </Link>
           <a
             href="https://github.com/Anka-1623/team1-turkiye-takvim"
             className="py-1 text-ink-2 transition-colors hover:text-ink"

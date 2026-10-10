@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { NavLink } from "@/components/NavLink";
-import { SignOutButton } from "@/components/SignOutButton";
+import { ProfileMenu } from "@/components/ProfileMenu";
 import { createClient } from "@/lib/supabase/server";
 
 export async function NavBar() {
@@ -27,12 +27,8 @@ export async function NavBar() {
           <NavLink href="/" className="hidden sm:inline-flex">
             Panel
           </NavLink>
-          <NavLink href="/kaydim">
-            <span className="sm:hidden">Kaydım</span>
-            <span className="hidden sm:inline">Kaydımı Yönet</span>
-          </NavLink>
           {user ? (
-            <SignOutButton />
+            <ProfileMenu email={user.email ?? ""} />
           ) : (
             <Link href="/giris?next=/kayit" className="btn btn-primary btn-sm ml-2">
               Giriş yap
