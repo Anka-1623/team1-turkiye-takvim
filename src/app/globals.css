@@ -375,6 +375,11 @@
       align-items: stretch;
     }
   }
+  @media (min-width: 1024px) {
+    .hero-solo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
   .hero-copy {
     display: flex;
     flex-direction: column;
@@ -427,21 +432,6 @@
   .slab-main {
     padding-left: calc(var(--cut) * 0.5);
   }
-  .slab-num {
-    display: block;
-    font-family: var(--font-mono);
-    font-weight: 700;
-    font-size: clamp(6.5rem, 17vw, 12rem);
-    line-height: 0.78;
-    letter-spacing: -0.07em;
-    font-variant-numeric: tabular-nums;
-  }
-  .slab-unit {
-    display: block;
-    margin-top: 0.75rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-  }
   .slab-word {
     display: block;
     font-family: var(--font-display);
@@ -450,17 +440,19 @@
     line-height: 0.9;
     letter-spacing: -0.055em;
   }
-  .slab-name {
+  .slab-headline {
+    padding-left: calc(var(--cut) * 0.5);
     font-family: var(--font-display);
-    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: 700;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
+    letter-spacing: -0.045em;
+    line-height: 1;
     overflow-wrap: anywhere;
+    text-wrap: balance;
   }
   .slab-names {
     display: grid;
-    gap: 0.4rem;
+    gap: 0.6rem;
   }
   .slab-sub {
     margin-top: 0.35rem;
@@ -612,11 +604,6 @@
     letter-spacing: -0.03em;
     line-height: 1.1;
   }
-  .bday-soon .bday-num,
-  .bday-soon .bday-word {
-    color: var(--color-accent);
-  }
-
   .bday-name {
     font-size: 1.5rem;
     letter-spacing: -0.03em;
@@ -677,13 +664,11 @@
   .bday-today + .bday-today {
     border-top-color: oklch(15.5% 0.008 285 / 0.18);
   }
-  .bday-today .bday-num,
   .bday-today .bday-word,
   .bday-today .bday-meta .k {
     color: var(--color-on-accent);
   }
   .bday-today .bday-date,
-  .bday-today .bday-unit,
   .bday-today .bday-meta p {
     color: var(--color-on-accent-2);
   }
@@ -697,6 +682,115 @@
   }
   .bday-today :focus-visible {
     outline-color: var(--color-on-accent);
+  }
+
+  /* ---------- Lead panel (/yonetim) ---------- */
+  .lead-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 3rem;
+    margin-bottom: 2rem;
+  }
+  .lead-stat dt {
+    font-size: 0.875rem;
+    color: var(--color-ink-3);
+  }
+  .lead-stat dd {
+    margin-top: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lead-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  .lead-table th,
+  .lead-table td {
+    padding: 1rem 0.875rem;
+    vertical-align: top;
+    border-top: 1px solid var(--color-line);
+    font-size: 0.9375rem;
+    color: var(--color-ink-2);
+    overflow-wrap: anywhere;
+  }
+  .lead-table thead th {
+    padding-block: 0.75rem;
+    border-top: 0;
+    border-bottom: 1px solid var(--color-line-strong);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink-3);
+  }
+  .lead-table tbody tr:hover {
+    background: var(--color-paper-2);
+  }
+  .lead-table .lead-name {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+  .lead-sub {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.8125rem;
+    color: var(--color-ink-3);
+  }
+  .lead-links {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .lead-links a {
+    color: var(--color-ink-2);
+    text-decoration: underline;
+    text-decoration-color: var(--color-ink-4);
+    text-underline-offset: 3px;
+  }
+  .lead-links a:hover {
+    color: var(--color-accent);
+    text-decoration-color: var(--color-accent);
+  }
+
+  /* Below tablet width each row becomes a stacked card, labelled from data-label. */
+  @media (max-width: 767px) {
+    .lead-table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+    .lead-table,
+    .lead-table tbody,
+    .lead-table tr {
+      display: block;
+    }
+    .lead-table tr {
+      padding: 0.75rem 0;
+      border-top: 1px solid var(--color-line-strong);
+    }
+    .lead-table th,
+    .lead-table td {
+      display: grid;
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 0.35rem 0;
+      border-top: 0;
+    }
+    .lead-table .lead-name {
+      display: block;
+      padding-bottom: 0.6rem;
+      font-size: 1.125rem;
+    }
+    .lead-table td::before {
+      content: attr(data-label);
+      font-size: 0.8125rem;
+      color: var(--color-ink-3);
+    }
   }
 }
 

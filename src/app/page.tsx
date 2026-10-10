@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { BirthdayCard } from "@/components/BirthdayCard";
-import { NextBirthday } from "@/components/NextBirthday";
+import { TodayBirthday } from "@/components/TodayBirthday";
 import { daysUntilNextBirthday, istanbulToday, nextOccurrenceYear } from "@/lib/date";
 import { fetchAllMembers } from "@/lib/digest";
 import { createClient } from "@/lib/supabase/server";
@@ -59,6 +59,9 @@ export default async function HomePage() {
     (a, b) => daysUntilNextBirthday(a.birthday) - daysUntilNextBirthday(b.birthday)
   );
 
+  // The hero slab only has something to say on a birthday, or while the calendar is still empty.
+  const showSlab = bornToday.length > 0 || members.length === 0;
+
   const thisMonth = istanbulToday().getUTCMonth() + 1;
   const thisYear = istanbulToday().getUTCFullYear();
   const perMonth = Array.from({ length: 12 }, (_, i) =>
@@ -72,7 +75,7 @@ export default async function HomePage() {
   return (
     <>
       <section className="shell pb-16 pt-10 md:pb-24 md:pt-14">
-        <div className="hero">
+        <div className={showSlab ? "hero" : "hero hero-solo"}>
           <div className="hero-copy">
             <p className="rise text-sm font-semibold uppercase tracking-[0.18em] text-accent">
               Team1 Türkiye
@@ -93,7 +96,7 @@ export default async function HomePage() {
             )}
           </div>
 
-          <NextBirthday today={bornToday} sorted={sorted} signedInMember={ownId !== null} />
+          {showSlab && <TodayBirthday today={bornToday} signedInMember={ownId !== null} />}
         </div>
       </section>
 

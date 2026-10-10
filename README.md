@@ -48,6 +48,19 @@ mailine ve tüm üyelerin bildirim tercihine erişmesi gerektiği için
 `SUPABASE_SERVICE_ROLE_KEY` gerektirir — anahtar yoksa cron'un geri kalanı
 (admin özeti) çalışmaya devam eder, sadece bu kısım atlanır.
 
+### Yönetim paneli (yerel lider)
+
+`/yonetim`, kayıt olan herkesi tam doğum tarihi (yıl dahil), yaş, hesap
+e-postası, kayıt tarihi ve hatırlatma tercihiyle listeler. Sadece
+`LEAD_EMAILS` listesindeki adreslerden biriyle (doğrulanmış e-posta, yani
+normal magic-link girişiyle) açılır; girişsiz ziyaretçi giriş sayfasına
+yönlenir, başka bir hesap 404 görür. Liste tarayıcıya anon key ile değil,
+sunucuda `SUPABASE_SERVICE_ROLE_KEY` ile okunur. Lider girişliyse Profil
+menüsünde "Yönetim paneli" bağlantısı görünür.
+
+Herkese açık panel (`/`) geri sayım göstermez: ana sayfadaki büyük alan
+sadece bir doğum günü geldiğinde o kişinin adını yazar.
+
 ### Güvenlik modeli
 
 Anon key public repo'da ve tarayıcı paketinde açık — bu tasarım gereği
@@ -85,6 +98,7 @@ npm run dev
 | `MAIL_FROM_NAME` | Kozmetik, boş bırakılırsa `Team1 Türkiye` kullanılır |
 | `NEXT_PUBLIC_SITE_URL` | İsteğe bağlı. Cron mailleri ve görseller için kanonik adres (ör. `https://team1-turkiye-takvim.vercel.app`); boşsa Vercel'in production alan adı kullanılır |
 | `ADMIN_NOTIFY_EMAILS` | Günlük özeti alacak adres(ler), virgülle ayrılmış |
+| `LEAD_EMAILS` | `/yonetim` yönetim panelini açabilecek adres(ler) (yerel lider), virgülle ayrılmış. `SUPABASE_SERVICE_ROLE_KEY` de gerekir |
 
 `.env*` dosyaları `.gitignore`'da (`.env.example` hariç) — gerçek key'ler
 asla repoya girmez.
