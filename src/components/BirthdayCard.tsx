@@ -1,21 +1,21 @@
-import { ageTurning, daysUntilLabel, daysUntilNextBirthday, formatBirthdayLong } from "@/lib/date";
+import { ageTurning, birthdayDayMonth, daysUntilNextBirthday, formatBirthdayLong } from "@/lib/date";
 import { platformLabel } from "@/lib/socials";
 import type { Member } from "@/lib/types";
 
-/** One row of the birthday ledger: countdown, who, and what to know before congratulating. */
+/** One row of the birthday ledger: the date, who, and what to know before congratulating. */
 export function BirthdayCard({ member }: { member: Member }) {
-  const days = daysUntilNextBirthday(member.birthday);
-  const variant = days === 0 ? "bday-today" : days <= 7 ? "bday-soon" : "";
+  const isToday = daysUntilNextBirthday(member.birthday) === 0;
+  const { day, month } = birthdayDayMonth(member.birthday);
 
   return (
-    <article className={`bday ${variant}`.trim()}>
-      <div aria-label={daysUntilLabel(days)}>
-        {days <= 1 ? (
-          <span className="bday-word">{days === 0 ? "Bugün" : "Yarın"}</span>
+    <article className={isToday ? "bday bday-today" : "bday"}>
+      <div aria-label={isToday ? "Bugün" : formatBirthdayLong(member.birthday)}>
+        {isToday ? (
+          <span className="bday-word">Bugün</span>
         ) : (
           <>
-            <span className="bday-num">{days}</span>
-            <span className="bday-unit">gün</span>
+            <span className="bday-num">{day}</span>
+            <span className="bday-unit">{month}</span>
           </>
         )}
       </div>
@@ -24,10 +24,11 @@ export function BirthdayCard({ member }: { member: Member }) {
         <h3 className="bday-name">
           {member.first_name} {member.last_name}
         </h3>
-        <p className="bday-date">
-          {formatBirthdayLong(member.birthday)}
-          {days === 0 ? `, ${ageTurning(member.birthday)} yaşına giriyor` : ""}
-        </p>
+        {isToday && (
+          <p className="bday-date">
+            {formatBirthdayLong(member.birthday)}, {ageTurning(member.birthday)} yaşına giriyor
+          </p>
+        )}
       </div>
 
       {(member.interests || member.note || member.socials.length > 0) && (

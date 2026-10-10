@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { SignOutButton } from "@/components/SignOutButton";
 
 /** Signed-in entry point in the navbar: the account's own pages and sign-out live here. */
-export function ProfileMenu({ email }: { email: string }) {
+export function ProfileMenu({ email, isLead = false }: { email: string; isLead?: boolean }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -78,6 +78,16 @@ export function ProfileMenu({ email }: { email: string }) {
           >
             Kaydımı yönet
           </Link>
+          {isLead && (
+            <Link
+              href="/yonetim"
+              className="profile-item"
+              aria-current={pathname.startsWith("/yonetim") ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              Yönetim paneli
+            </Link>
+          )}
           <SignOutButton className="profile-item" />
         </div>
       )}

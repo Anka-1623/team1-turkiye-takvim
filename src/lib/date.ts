@@ -64,8 +64,27 @@ export function formatBirthdayLong(birthday: string): string {
   return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", timeZone: "UTC" }).format(d);
 }
 
-export function daysUntilLabel(days: number): string {
-  if (days === 0) return "Bugün";
-  if (days === 1) return "Yarın";
-  return `${days} gün sonra`;
+/** Day-of-month and abbreviated month name ("Eki"), for the date block on a birthday row. */
+export function birthdayDayMonth(birthday: string): { day: number; month: string } {
+  const { month, day } = parseBirthday(birthday);
+  const d = new Date(Date.UTC(2000, month - 1, day));
+  return { day, month: new Intl.DateTimeFormat("tr-TR", { month: "short", timeZone: "UTC" }).format(d) };
+}
+
+/** The full birth date including the year, e.g. "17 Ekim 1999". */
+export function formatBirthdayFull(birthday: string): string {
+  const { year, month, day } = parseBirthday(birthday);
+  const d = new Date(Date.UTC(year, month - 1, day));
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(d);
+}
+
+/** How old the member is today (on their birthday they have just turned `ageTurning`). */
+export function currentAge(birthday: string, today: Date = istanbulToday()): number {
+  const turning = ageTurning(birthday, today);
+  return daysUntilNextBirthday(birthday, today) === 0 ? turning : turning - 1;
 }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { NavLink } from "@/components/NavLink";
 import { ProfileMenu } from "@/components/ProfileMenu";
+import { isLeadUser } from "@/lib/lead";
 import { createClient } from "@/lib/supabase/server";
 
 export async function NavBar() {
@@ -28,7 +29,7 @@ export async function NavBar() {
             Panel
           </NavLink>
           {user ? (
-            <ProfileMenu email={user.email ?? ""} />
+            <ProfileMenu email={user.email ?? ""} isLead={isLeadUser(user)} />
           ) : (
             <Link href="/giris?next=/kayit" className="btn btn-primary btn-sm ml-2">
               Giriş yap
