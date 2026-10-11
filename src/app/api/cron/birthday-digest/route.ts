@@ -71,7 +71,7 @@ async function sendMemberNotifications() {
 
   const { data: members, error: membersError } = await admin
     .from("members")
-    .select("id, first_name, last_name, birthday, socials, interests, note, created_at, user_id, notify_opt_in");
+    .select("id, first_name, last_name, birthday, socials, interests, wish, note, created_at, user_id, notify_opt_in");
   if (membersError) throw membersError;
 
   const due = (members as AdminMember[]).filter((m) =>

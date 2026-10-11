@@ -9,6 +9,7 @@ export type LeadRow = {
   birthday: string; // "YYYY-MM-DD"
   socials: SocialLink[];
   interests: string | null;
+  wish: string | null;
   note: string | null;
   notifyOptIn: boolean;
   createdAt: string;
@@ -82,6 +83,10 @@ export function LeadMemberList({ rows }: { rows: LeadRow[] }) {
               </summary>
 
               <dl className="lead-detail">
+                <div>
+                  <dt>Doğum gününde istediği</dt>
+                  <dd>{r.wish ?? empty}</dd>
+                </div>
                 <div>
                   <dt>İlgi alanları ve sevdikleri</dt>
                   <dd>{r.interests ?? empty}</dd>

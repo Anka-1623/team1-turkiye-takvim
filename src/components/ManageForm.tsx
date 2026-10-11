@@ -19,6 +19,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
     birthday: initial.birthday,
     socials: initial.socials,
     interests: initial.interests ?? "",
+    wish: initial.wish ?? "",
     note: initial.note ?? "",
     notify_opt_in: initial.notify_opt_in,
   });
@@ -37,6 +38,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         birthday: form.birthday,
         socials: form.socials.filter((s) => s.url.trim().length > 0),
         interests: form.interests.trim() || null,
+        wish: form.wish.trim() || null,
         note: form.note.trim() || null,
         notify_opt_in: form.notify_opt_in,
       })
@@ -130,8 +132,24 @@ export function ManageForm({ initial }: { initial: MyMember }) {
             value={form.interests}
             onChange={(e) => setForm({ ...form, interests: e.target.value })}
             className="field w-full"
-            placeholder="Örn. kitap, satranç, blockchain, kahve, futbol, sevdiğin müzik"
+            placeholder="Örn. kitap, satranç, kahve, futbol, film, müzik, seyahat, blockchain"
           />
+        </label>
+
+        <label className="block">
+          <span className="label">
+            Doğum gününde istediğin bir şey <span className="text-ink-3">(opsiyonel)</span>
+          </span>
+          <input
+            maxLength={300}
+            value={form.wish}
+            onChange={(e) => setForm({ ...form, wish: e.target.value })}
+            className="field w-full"
+            placeholder="Örn. bir kitap, çekirdek kahve, ya da sadece güzel bir tebrik"
+          />
+          <span className="help">
+            Arkadaşların hediye veya kutlama fikri bulabilsin diye panelde görünür.
+          </span>
         </label>
 
         <label className="block">

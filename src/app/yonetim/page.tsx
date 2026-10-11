@@ -22,6 +22,7 @@ type MemberRow = {
   birthday: string;
   socials: SocialLink[];
   interests: string | null;
+  wish: string | null;
   note: string | null;
   notify_opt_in: boolean;
   created_at: string;
@@ -43,7 +44,7 @@ export default async function YonetimPage() {
   if (admin) {
     const { data: members, error } = await admin
       .from("members")
-      .select("id, user_id, first_name, last_name, birthday, socials, interests, note, notify_opt_in, created_at")
+      .select("id, user_id, first_name, last_name, birthday, socials, interests, wish, note, notify_opt_in, created_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
 
@@ -58,6 +59,7 @@ export default async function YonetimPage() {
       birthday: m.birthday,
       socials: m.socials,
       interests: m.interests,
+      wish: m.wish,
       note: m.note,
       notifyOptIn: m.notify_opt_in,
       createdAt: m.created_at,
