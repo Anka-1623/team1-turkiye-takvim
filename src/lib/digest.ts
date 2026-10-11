@@ -10,7 +10,7 @@ export const LEAD_DAYS = 3;
 export async function fetchAllMembers(): Promise<Member[]> {
   const { data, error } = await supabase
     .from("members")
-    .select("id, first_name, last_name, birthday, socials, interests, note, created_at")
+    .select("id, first_name, last_name, birthday, socials, interests, wish, note, created_at")
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as Member[];

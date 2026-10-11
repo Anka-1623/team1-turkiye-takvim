@@ -39,7 +39,8 @@ const MANAGE_FOOTER = (siteUrl: string) =>
 
 function profileBlock(member: Member, includeFacts: boolean): string {
   const parts: string[] = [];
-  if (includeFacts && member.interests?.trim()) parts.push(fact("İlgi alanları", member.interests.trim()));
+  if (includeFacts && member.wish?.trim()) parts.push(fact("Doğum gününde istediği", member.wish.trim()));
+  if (includeFacts && member.interests?.trim()) parts.push(fact("İlgi alanları ve sevdikleri", member.interests.trim()));
   if (includeFacts && member.note?.trim()) parts.push(fact("Not", member.note.trim()));
   const links = chips(member.socials.map((s) => ({ label: platformLabel(s.platform), url: s.url })));
   if (links) {

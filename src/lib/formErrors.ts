@@ -5,6 +5,7 @@ const MEMBER_ERROR_MESSAGES: Record<string, string> = {
   members_socials_valid:
     "Sosyal medya bağlantıları geçersiz — en az bir, en fazla 8 tane olmalı ve http:// veya https:// ile başlamalı.",
   members_interests_len: "İlgi alanları en fazla 300 karakter olabilir.",
+  members_wish_len: "Doğum gününde istediğin şey en fazla 300 karakter olabilir.",
   members_note_len: "Not en fazla 500 karakter olabilir.",
   members_user_id_key: "Zaten bir kaydın var. 'Kaydımı Yönet' sayfasından düzenleyebilirsin.",
 };

@@ -31,8 +31,14 @@ export function BirthdayCard({ member }: { member: Member }) {
         )}
       </div>
 
-      {(member.interests || member.note || member.socials.length > 0) && (
+      {(member.wish || member.interests || member.note || member.socials.length > 0) && (
         <div className="bday-meta">
+          {member.wish && (
+            <p>
+              <span className="k">Doğum gününde istediği</span>
+              {member.wish}
+            </p>
+          )}
           {member.interests && (
             <p>
               <span className="k">İlgi alanları ve sevdikleri</span>

@@ -22,6 +22,7 @@ create table if not exists public.members (
   birthday date not null,
   socials jsonb not null default '[]'::jsonb,
   interests text,
+  wish text,
   note text,
   notify_opt_in boolean not null default false,
   created_at timestamptz not null default now(),
@@ -33,6 +34,7 @@ create table if not exists public.members (
     check (portal_id is null or char_length(trim(portal_id)) between 2 and 80),
   constraint members_birthday_range check (birthday > date '1900-01-01' and birthday <= current_date),
   constraint members_interests_len check (char_length(coalesce(interests, '')) <= 300),
+  constraint members_wish_len check (char_length(coalesce(wish, '')) <= 300),
   constraint members_note_len check (char_length(coalesce(note, '')) <= 500)
 );
 
@@ -63,11 +65,11 @@ create policy members_owner_delete
 
 grant usage on schema public to anon, authenticated;
 
-grant select (id, first_name, last_name, birthday, socials, interests, note, created_at)
+grant select (id, first_name, last_name, birthday, socials, interests, wish, note, created_at)
   on public.members to anon, authenticated;
-grant insert (user_id, first_name, last_name, birthday, socials, interests, note, notify_opt_in)
+grant insert (user_id, first_name, last_name, birthday, socials, interests, wish, note, notify_opt_in)
   on public.members to authenticated;
-grant update (first_name, last_name, birthday, socials, interests, note, notify_opt_in)
+grant update (first_name, last_name, birthday, socials, interests, wish, note, notify_opt_in)
   on public.members to authenticated;
 grant delete on public.members to authenticated;
 
@@ -118,6 +120,7 @@ returns table (
   birthday date,
   socials jsonb,
   interests text,
+  wish text,
   note text,
   notify_opt_in boolean
 )
@@ -126,7 +129,7 @@ security definer
 stable
 set search_path = public
 as $$
-  select id, first_name, last_name, birthday, socials, interests, note, notify_opt_in
+  select id, first_name, last_name, birthday, socials, interests, wish, note, notify_opt_in
   from public.members
   where user_id = auth.uid();
 $$;

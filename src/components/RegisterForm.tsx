@@ -13,6 +13,7 @@ export function RegisterForm() {
   const [birthday, setBirthday] = useState("");
   const [socials, setSocials] = useState<SocialLink[]>([{ platform: "x", url: "" }]);
   const [interests, setInterests] = useState("");
+  const [wish, setWish] = useState("");
   const [note, setNote] = useState("");
   const [notifyOptIn, setNotifyOptIn] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -31,6 +32,7 @@ export function RegisterForm() {
       birthday,
       socials: socials.filter((s) => s.url.trim().length > 0),
       interests: interests.trim() || null,
+      wish: wish.trim() || null,
       note: note.trim() || null,
       notify_opt_in: notifyOptIn,
     });
@@ -115,10 +117,26 @@ export function RegisterForm() {
           value={interests}
           onChange={(e) => setInterests(e.target.value)}
           className="field w-full"
-          placeholder="Örn. kitap, satranç, blockchain, kahve, futbol, sevdiğin müzik"
+          placeholder="Örn. kitap, satranç, kahve, futbol, film, müzik, seyahat, blockchain"
         />
         <span className="help">
-          Diğer üyeler seni tanıyabilsin, hediye/kutlama fikri bulabilsin diye panelde görünür.
+          Diğer üyeler seni tanıyabilsin diye panelde görünür.
+        </span>
+      </label>
+
+      <label className="block">
+        <span className="label">
+          Doğum gününde istediğin bir şey <span className="text-ink-3">(opsiyonel)</span>
+        </span>
+        <input
+          maxLength={300}
+          value={wish}
+          onChange={(e) => setWish(e.target.value)}
+          className="field w-full"
+          placeholder="Örn. bir kitap, çekirdek kahve, ya da sadece güzel bir tebrik"
+        />
+        <span className="help">
+          Arkadaşların hediye veya kutlama fikri bulabilsin diye panelde görünür.
         </span>
       </label>
 
