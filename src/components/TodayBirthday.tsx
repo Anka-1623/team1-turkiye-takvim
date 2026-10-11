@@ -61,7 +61,7 @@ export function TodayBirthday({
       <div className="slab-main">
         <span className="slab-word">İlk kayıt sende.</span>
       </div>
-      <p className="slab-sub">Doğum gününü ekle, diğer üyeler seni kutlamayı kaçırmasın.</p>
+      <p className="slab-sub">Kaydını ekle, diğer üyeler seni kutlamayı kaçırmasın.</p>
     </aside>
   );
 }

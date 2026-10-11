@@ -35,7 +35,7 @@ export default async function KayitPage() {
 
   return (
     <FormPage
-      title="Doğum gününü ekle"
+      title="Kaydını ekle"
       lead={
         <>
           Bilgilerin Team1 Türkiye üyelerine açık şekilde panelde görünür. Daha önce Member Portal ID

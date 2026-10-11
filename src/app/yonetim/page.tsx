@@ -21,6 +21,8 @@ type MemberRow = {
   last_name: string;
   birthday: string;
   socials: SocialLink[];
+  interests: string | null;
+  note: string | null;
   notify_opt_in: boolean;
   created_at: string;
 };
@@ -41,7 +43,7 @@ export default async function YonetimPage() {
   if (admin) {
     const { data: members, error } = await admin
       .from("members")
-      .select("id, user_id, first_name, last_name, birthday, socials, notify_opt_in, created_at")
+      .select("id, user_id, first_name, last_name, birthday, socials, interests, note, notify_opt_in, created_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
 
@@ -55,6 +57,8 @@ export default async function YonetimPage() {
       email: m.user_id ? (emailByUserId.get(m.user_id) ?? null) : null,
       birthday: m.birthday,
       socials: m.socials,
+      interests: m.interests,
+      note: m.note,
       notifyOptIn: m.notify_opt_in,
       createdAt: m.created_at,
     }));
@@ -64,13 +68,6 @@ export default async function YonetimPage() {
     <div className="shell pb-20 pt-10 md:pt-16">
       <header className="min-w-0">
         <h1 className="page-title rise">Yönetim paneli</h1>
-        <p
-          className="rise mt-5 max-w-[56ch] leading-relaxed text-ink-2"
-          style={{ "--i": 1 } as CSSProperties}
-        >
-          Kayıt olan herkes, tam doğum tarihleri ve e-postalarıyla. Bu sayfayı yalnızca yerel lider
-          görür; lütfen listeyi paylaşmayın.
-        </p>
       </header>
 
       <div className="rise mt-10 md:mt-14" style={{ "--i": 2 } as CSSProperties}>

@@ -123,14 +123,14 @@ export function ManageForm({ initial }: { initial: MyMember }) {
 
         <label className="block">
           <span className="label">
-            İlgi alanları <span className="text-ink-3">(opsiyonel)</span>
+            İlgi alanların ve sevdiğin şeyler <span className="text-ink-3">(opsiyonel)</span>
           </span>
           <input
             maxLength={300}
             value={form.interests}
             onChange={(e) => setForm({ ...form, interests: e.target.value })}
             className="field w-full"
-            placeholder="Örn. kitap, satranç, blockchain, yürüyüş"
+            placeholder="Örn. kitap, satranç, blockchain, kahve, futbol, sevdiğin müzik"
           />
         </label>
 
