@@ -84,13 +84,13 @@ export default async function HomePage() {
               Doğum Günü Takvimi
             </h1>
             <p className="hero-lead rise" style={{ "--i": 2 } as CSSProperties}>
-              Üyelerin doğum günleri tek yerde. Kaydını ekle, yaklaşanları gör, kimseyi kutlamayı
-              kaçırma.
+              Üyelerin doğum günleri ve neleri sevdikleri tek yerde. Kaydını ekle, yaklaşanları gör,
+              kimseyi kutlamayı kaçırma.
             </p>
             {ownId === null && (
               <div className="rise" style={{ "--i": 3 } as CSSProperties}>
                 <Link href="/kayit" className="btn btn-primary">
-                  Doğum günümü ekle
+                  Kaydımı ekle
                 </Link>
               </div>
             )}

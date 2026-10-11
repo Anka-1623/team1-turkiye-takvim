@@ -8,6 +8,8 @@ export type LeadRow = {
   email: string | null;
   birthday: string; // "YYYY-MM-DD"
   socials: SocialLink[];
+  interests: string | null;
+  note: string | null;
   notifyOptIn: boolean;
   createdAt: string;
 };
@@ -19,7 +21,9 @@ const registeredFormat = new Intl.DateTimeFormat("tr-TR", {
   timeZone: "Europe/Istanbul",
 });
 
-/** Everyone who has registered, with the full birth date and the account's e-mail. */
+const empty = <span className="lead-sub">Belirtilmemiş</span>;
+
+/** Everyone who has registered; opening a row shows what they like, their note and links. */
 export function LeadMemberList({ rows }: { rows: LeadRow[] }) {
   const optedIn = rows.filter((r) => r.notifyOptIn).length;
 
@@ -39,43 +43,58 @@ export function LeadMemberList({ rows }: { rows: LeadRow[] }) {
       {rows.length === 0 ? (
         <p className="alert">Henüz kayıtlı üye yok.</p>
       ) : (
-        <table className="lead-table">
-          <caption className="sr-only">Kayıtlı üyeler, en son kayıt olan en üstte</caption>
-          <thead>
-            <tr>
-              <th scope="col">Ad Soyad</th>
-              <th scope="col">Doğum tarihi</th>
-              <th scope="col">E-posta</th>
-              <th scope="col">Kayıt tarihi</th>
-              <th scope="col">Hatırlatma</th>
-              <th scope="col">Bağlantılar</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id}>
-                <th scope="row" className="lead-name">
-                  {r.name}
-                </th>
-                <td data-label="Doğum tarihi">
-                  <div>
+        <div className="lead-list">
+          <div className="lead-head" aria-hidden="true">
+            <span>Ad Soyad</span>
+            <span>Doğum tarihi</span>
+            <span>E-posta</span>
+            <span>Kayıt tarihi</span>
+          </div>
+
+          {rows.map((r) => (
+            <details key={r.id} className="lead-row">
+              <summary className="lead-summary">
+                <span className="lead-name">{r.name}</span>
+                <span className="lead-cell" data-label="Doğum tarihi">
+                  <span>
                     {formatBirthdayFull(r.birthday)}
                     <span className="lead-sub">{currentAge(r.birthday)} yaşında</span>
-                  </div>
-                </td>
-                <td data-label="E-posta" className="lead-email">
-                  <div>{r.email ?? <span className="lead-sub">Hesap bağlı değil</span>}</div>
-                </td>
-                <td data-label="Kayıt tarihi">
-                  <div>{registeredFormat.format(new Date(r.createdAt))}</div>
-                </td>
-                <td data-label="Hatırlatma">
-                  <div>{r.notifyOptIn ? "Açık" : "Kapalı"}</div>
-                </td>
-                <td data-label="Bağlantılar">
-                  <div>
+                  </span>
+                </span>
+                <span className="lead-cell lead-email" data-label="E-posta">
+                  <span>{r.email ?? <span className="lead-sub">Hesap bağlı değil</span>}</span>
+                </span>
+                <span className="lead-cell" data-label="Kayıt tarihi">
+                  <span>{registeredFormat.format(new Date(r.createdAt))}</span>
+                </span>
+                <svg
+                  className="lead-chevron"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  aria-hidden="true"
+                >
+                  <path d="M2.5 4.5 6 8l3.5-3.5" />
+                </svg>
+              </summary>
+
+              <dl className="lead-detail">
+                <div>
+                  <dt>İlgi alanları ve sevdikleri</dt>
+                  <dd>{r.interests ?? empty}</dd>
+                </div>
+                <div>
+                  <dt>Not</dt>
+                  <dd>{r.note ?? empty}</dd>
+                </div>
+                <div>
+                  <dt>Bağlantılar</dt>
+                  <dd>
                     {r.socials.length === 0 ? (
-                      <span className="lead-sub">Yok</span>
+                      empty
                     ) : (
                       <span className="lead-links">
                         {r.socials.map((s, i) => (
@@ -85,12 +104,16 @@ export function LeadMemberList({ rows }: { rows: LeadRow[] }) {
                         ))}
                       </span>
                     )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </dd>
+                </div>
+                <div>
+                  <dt>E-posta hatırlatması</dt>
+                  <dd>{r.notifyOptIn ? "Açık" : "Kapalı"}</dd>
+                </div>
+              </dl>
+            </details>
+          ))}
+        </div>
       )}
     </>
   );

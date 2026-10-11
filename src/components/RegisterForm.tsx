@@ -108,17 +108,17 @@ export function RegisterForm() {
 
       <label className="block">
         <span className="label">
-          İlgi alanları <span className="text-ink-3">(opsiyonel)</span>
+          İlgi alanların ve sevdiğin şeyler <span className="text-ink-3">(opsiyonel)</span>
         </span>
         <input
           maxLength={300}
           value={interests}
           onChange={(e) => setInterests(e.target.value)}
           className="field w-full"
-          placeholder="Örn. kitap, satranç, blockchain, yürüyüş"
+          placeholder="Örn. kitap, satranç, blockchain, kahve, futbol, sevdiğin müzik"
         />
         <span className="help">
-          Diğer üyeler hediye/kutlama fikri bulabilsin diye panelde görünür.
+          Diğer üyeler seni tanıyabilsin, hediye/kutlama fikri bulabilsin diye panelde görünür.
         </span>
       </label>
 
@@ -159,7 +159,7 @@ export function RegisterForm() {
         disabled={submitting}
         className="btn btn-primary"
       >
-        {submitting ? "Ekleniyor…" : "Doğum günümü ekle"}
+        {submitting ? "Ekleniyor…" : "Kaydımı ekle"}
       </button>
     </form>
   );

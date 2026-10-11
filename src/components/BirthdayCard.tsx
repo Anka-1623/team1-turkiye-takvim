@@ -35,7 +35,7 @@ export function BirthdayCard({ member }: { member: Member }) {
         <div className="bday-meta">
           {member.interests && (
             <p>
-              <span className="k">İlgi alanları</span>
+              <span className="k">İlgi alanları ve sevdikleri</span>
               {member.interests}
             </p>
           )}
