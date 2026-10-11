@@ -120,7 +120,6 @@ returns table (
   birthday date,
   socials jsonb,
   interests text,
-  wish text,
   note text,
   notify_opt_in boolean
 )
@@ -129,7 +128,7 @@ security definer
 stable
 set search_path = public
 as $$
-  select id, first_name, last_name, birthday, socials, interests, wish, note, notify_opt_in
+  select id, first_name, last_name, birthday, socials, interests, note, notify_opt_in
   from public.members
   where user_id = auth.uid();
 $$;

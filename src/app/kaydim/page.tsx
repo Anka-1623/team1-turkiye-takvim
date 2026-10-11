@@ -30,7 +30,14 @@ export default async function KaydimPage() {
   }
 
   const { data } = await supabase.rpc("get_my_member");
-  const member = (data?.[0] ?? null) as MyMember | null;
+  const row = (data?.[0] ?? null) as Omit<MyMember, "wish"> | null;
+
+  // get_my_member() predates the wish column; it is public, so read it straight from the table.
+  let member: MyMember | null = null;
+  if (row) {
+    const { data: extra } = await supabase.from("members").select("wish").eq("id", row.id).maybeSingle();
+    member = { ...row, wish: (extra as { wish: string | null } | null)?.wish ?? null };
+  }
 
   return (
     <FormPage
