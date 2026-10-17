@@ -793,6 +793,35 @@
     overflow-wrap: anywhere;
     white-space: pre-line;
   }
+  .lead-badge {
+    display: block;
+    width: fit-content;
+    margin-top: 0.3rem;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--color-line-strong);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink-2);
+  }
+  .lead-badge-alert {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .lead-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding: 0 0.875rem 1.5rem;
+    background: var(--color-paper-2);
+  }
+  .lead-actions-ask {
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+  }
+  .lead-actions-error {
+    flex-basis: 100%;
+  }
   .lead-links {
     display: grid;
     gap: 0.25rem;

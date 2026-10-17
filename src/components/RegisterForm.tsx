@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { SocialLinksEditor } from "@/components/SocialLinksEditor";
 import { friendlyMemberError } from "@/lib/formErrors";
-import { createClient } from "@/lib/supabase/client";
 import type { SocialLink } from "@/lib/types";
 
 export function RegisterForm() {
+  const [portalId, setPortalId] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [birthday, setBirthday] = useState("");
@@ -15,44 +15,60 @@ export function RegisterForm() {
   const [interests, setInterests] = useState("");
   const [wish, setWish] = useState("");
   const [note, setNote] = useState("");
+  const [address, setAddress] = useState("");
   const [notifyOptIn, setNotifyOptIn] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState<{ approved: boolean } | null>(null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
 
-    const supabase = createClient();
-    const { error: insertError } = await supabase.from("members").insert({
-      first_name: firstName.trim(),
-      last_name: lastName.trim(),
-      birthday,
-      socials: socials.filter((s) => s.url.trim().length > 0),
-      interests: interests.trim() || null,
-      wish: wish.trim() || null,
-      note: note.trim() || null,
-      notify_opt_in: notifyOptIn,
-    });
-
-    setSubmitting(false);
-
-    if (insertError) {
-      setError(friendlyMemberError(insertError.message));
+    let response: Response;
+    try {
+      response = await fetch("/api/members", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          portal_id: portalId.trim(),
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          birthday,
+          socials: socials.filter((s) => s.url.trim().length > 0),
+          interests: interests.trim() || null,
+          wish: wish.trim() || null,
+          note: note.trim() || null,
+          address: address.trim() || null,
+          notify_opt_in: notifyOptIn,
+        }),
+      });
+    } catch {
+      setSubmitting(false);
+      setError(friendlyMemberError(""));
       return;
     }
-    setDone(true);
+
+    const result = (await response.json().catch(() => null)) as { error?: string; approved?: boolean } | null;
+    setSubmitting(false);
+
+    if (!response.ok || !result || result.error) {
+      setError(friendlyMemberError(result?.error ?? ""));
+      return;
+    }
+    setDone({ approved: result.approved === true });
   }
 
   if (done) {
     return (
       <div className="panel panel-accent">
-        <h2 className="text-3xl">Eklendi</h2>
+        <h2 className="text-3xl">{done.approved ? "Eklendi" : "Kaydın alındı"}</h2>
         <p className="mt-2 text-sm text-ink-2">
-          Doğum günün panelde görünüyor. Kaydını dilediğin zaman &apos;Kaydımı Yönet&apos;
-          sayfasından düzenleyebilir veya silebilirsin.
+          {done.approved
+            ? "Doğum günün panelde görünüyor. "
+            : "Girdiğin Member Portal ID üye listesinde bulunamadı. Yerel lider kaydını inceleyip onayladığında doğum günün panelde görünecek. "}
+          Kaydını dilediğin zaman &apos;Kaydımı Yönet&apos; sayfasından düzenleyebilir veya silebilirsin.
         </p>
         <Link
           href="/"
@@ -88,6 +104,23 @@ export function RegisterForm() {
           />
         </label>
       </div>
+
+      <label className="block">
+        <span className="label">Member Portal ID</span>
+        <input
+          required
+          minLength={2}
+          maxLength={80}
+          value={portalId}
+          onChange={(e) => setPortalId(e.target.value)}
+          className="field w-full sm:w-56"
+          placeholder="T1-040-123"
+          autoComplete="off"
+        />
+        <span className="help">
+          Team1 üyeliğini doğrulamak için. Sadece yerel lider görür, panelde yayınlanmaz.
+        </span>
+      </label>
 
       <label className="block">
         <span className="label">Doğum günü</span>
@@ -152,6 +185,21 @@ export function RegisterForm() {
           className="field w-full"
           placeholder="Örn. bu yıl sürpriz istemiyorum, ya da bir dilek listesi bağlantısı"
         />
+      </label>
+
+      <label className="block">
+        <span className="label">
+          Adres <span className="text-ink-3">(opsiyonel)</span>
+        </span>
+        <textarea
+          maxLength={300}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          rows={2}
+          className="field w-full"
+          placeholder="Örn. hediye ya da kargo gönderilecekse"
+        />
+        <span className="help">Sadece yerel lider görür; panelde ve e-postalarda yer almaz.</span>
       </label>
 
       <label className="flex items-start gap-2.5 text-sm text-ink-2">

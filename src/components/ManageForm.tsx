@@ -14,6 +14,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState<EditableMember>({
+    portal_id: initial.portal_id ?? "",
     first_name: initial.first_name,
     last_name: initial.last_name,
     birthday: initial.birthday,
@@ -21,6 +22,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
     interests: initial.interests ?? "",
     wish: initial.wish ?? "",
     note: initial.note ?? "",
+    address: initial.address ?? "",
     notify_opt_in: initial.notify_opt_in,
   });
 
@@ -33,6 +35,8 @@ export function ManageForm({ initial }: { initial: MyMember }) {
     const { error: updateError } = await supabase
       .from("members")
       .update({
+        // A verified ID is locked in the database; leave it out so the update never touches it.
+        ...(initial.portal_verified ? {} : { portal_id: form.portal_id.trim() || null }),
         first_name: form.first_name.trim(),
         last_name: form.last_name.trim(),
         birthday: form.birthday,
@@ -40,6 +44,7 @@ export function ManageForm({ initial }: { initial: MyMember }) {
         interests: form.interests.trim() || null,
         wish: form.wish.trim() || null,
         note: form.note.trim() || null,
+        address: form.address.trim() || null,
         notify_opt_in: form.notify_opt_in,
       })
       .eq("id", initial.id);
@@ -79,6 +84,14 @@ export function ManageForm({ initial }: { initial: MyMember }) {
 
   return (
     <div className="space-y-6">
+      {!initial.approved && (
+        <p className="alert" role="status">
+          Kaydın yerel liderin onayını bekliyor; onaylanana kadar doğum günün panelde görünmez.
+          {initial.portal_id
+            ? " Member Portal ID'ni yanlış yazdıysan aşağıdan düzeltebilirsin."
+            : " Member Portal ID'ni aşağıya yazarsan doğrulanır."}
+        </p>
+      )}
       <form onSubmit={handleSave} className="space-y-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
@@ -100,6 +113,24 @@ export function ManageForm({ initial }: { initial: MyMember }) {
             />
           </label>
         </div>
+
+        <label className="block">
+          <span className="label">Member Portal ID</span>
+          <input
+            maxLength={80}
+            value={form.portal_id}
+            onChange={(e) => setForm({ ...form, portal_id: e.target.value })}
+            disabled={initial.portal_verified}
+            className="field w-full sm:w-56"
+            placeholder="T1-040-123"
+            autoComplete="off"
+          />
+          <span className="help">
+            {initial.portal_verified
+              ? "Doğrulandı. Sadece yerel lider görür."
+              : "Team1 üyeliğini doğrulamak için. Sadece yerel lider görür."}
+          </span>
+        </label>
 
         <label className="block">
           <span className="label">Doğum günü</span>
@@ -163,6 +194,20 @@ export function ManageForm({ initial }: { initial: MyMember }) {
             rows={3}
             className="field w-full"
           />
+        </label>
+
+        <label className="block">
+          <span className="label">
+            Adres <span className="text-ink-3">(opsiyonel)</span>
+          </span>
+          <textarea
+            maxLength={300}
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            rows={2}
+            className="field w-full"
+          />
+          <span className="help">Sadece yerel lider görür; panelde ve e-postalarda yer almaz.</span>
         </label>
 
         <label className="flex items-start gap-2.5 text-sm text-ink-2">

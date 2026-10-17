@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildDigest, renderDigestEmailHtml } from "@/lib/digest";
 import {
-  MEMBER_NOTIFY_MILESTONES,
   SELF_GREETING_MILESTONE,
   renderMemberNotificationHtml,
   renderMemberNotificationSubject,
   renderSelfGreetingHtml,
   renderSelfGreetingSubject,
 } from "@/lib/memberNotify";
+import { dueMilestone } from "@/lib/milestone";
 import { sendEmail } from "@/lib/email";
+import { C, emailShell, escapeHtml, heading, paragraph, row } from "@/lib/emailLayout";
 import { siteUrl } from "@/lib/siteUrl";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { daysUntilNextBirthday, nextOccurrenceYear } from "@/lib/date";
@@ -57,13 +58,14 @@ async function sendOnce(
 }
 
 /**
- * Sends each opted-in member (excluding the birthday person) a heads-up at
- * 7/3/0 days out, and the birthday person (if opted in) a greeting on the
- * day itself. Runs entirely on the service-role client since it needs
- * cross-user data (auth.users emails, other members' notify_opt_in) that
- * RLS would otherwise block. Silently returns a skip reason when
- * SUPABASE_SERVICE_ROLE_KEY isn't configured yet, mirroring how the admin
- * digest degrades when RESEND_API_KEY is missing.
+ * Sends each approved, opted-in member (excluding the birthday person) a heads-up at
+ * 7/3 days out and on the day, and the birthday person (if opted in) a
+ * greeting on the day itself. A heads-up missed by a failed run is retried
+ * the next day (see dueMilestone). Runs entirely on the service-role client
+ * since it needs cross-user data (auth.users emails, other members'
+ * notify_opt_in) that RLS would otherwise block. Silently returns a skip
+ * reason when SUPABASE_SERVICE_ROLE_KEY isn't configured yet, mirroring how
+ * the admin digest degrades when RESEND_API_KEY is missing.
  */
 async function sendMemberNotifications() {
   const admin = createAdminClient();
@@ -71,12 +73,16 @@ async function sendMemberNotifications() {
 
   const { data: members, error: membersError } = await admin
     .from("members")
-    .select("id, first_name, last_name, birthday, socials, interests, wish, note, created_at, user_id, notify_opt_in");
+    .select("id, first_name, last_name, birthday, socials, interests, wish, note, created_at, user_id, notify_opt_in")
+    // Registrations still waiting for the lead's approval neither get reminders nor trigger them.
+    .eq("approved", true);
   if (membersError) throw membersError;
 
-  const due = (members as AdminMember[]).filter((m) =>
-    (MEMBER_NOTIFY_MILESTONES as readonly number[]).includes(daysUntilNextBirthday(m.birthday))
-  );
+  const due = (members as AdminMember[]).flatMap((member) => {
+    const daysLeft = daysUntilNextBirthday(member.birthday);
+    const milestone = dueMilestone(daysLeft);
+    return milestone === null ? [] : [{ member, daysLeft, milestone }];
+  });
   if (due.length === 0) return { ran: true, notified: 0, greetings: 0 };
 
   const { data: userList, error: usersError } = await admin.auth.admin.listUsers({ perPage: 1000 });
@@ -89,8 +95,7 @@ async function sendMemberNotifications() {
 
   let notified = 0;
   let greetings = 0;
-  for (const member of due) {
-    const milestone = daysUntilNextBirthday(member.birthday);
+  for (const { member, daysLeft, milestone } of due) {
     const occurrenceYear = nextOccurrenceYear(member.birthday);
 
     const to = recipientPool
@@ -102,8 +107,8 @@ async function sendMemberNotifications() {
       { member_id: member.id, milestone, occurrence_year: occurrenceYear },
       {
         to,
-        subject: renderMemberNotificationSubject(member, milestone),
-        html: renderMemberNotificationHtml(member, milestone, origin),
+        subject: renderMemberNotificationSubject(member, daysLeft),
+        html: renderMemberNotificationHtml(member, daysLeft, origin),
       }
     );
     if (sent) notified += 1;
@@ -126,11 +131,66 @@ async function sendMemberNotifications() {
   return { ran: true, notified, greetings };
 }
 
+const adminRecipients = () =>
+  (process.env.ADMIN_NOTIFY_EMAILS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+async function sendDigest() {
+  const { today, soon } = await buildDigest();
+  if (today.length === 0 && soon.length === 0) {
+    return { sent: false, reason: "no birthdays today or in the lead window", today: 0, soon: 0 };
+  }
+
+  const subject =
+    today.length > 0
+      ? `Bugün doğum günü olan ${today.length} kişi var - Team1 Türkiye`
+      : `Yaklaşan doğum günleri - Team1 Türkiye`;
+
+  const result = await sendEmail({
+    to: adminRecipients(),
+    subject,
+    html: renderDigestEmailHtml(today, soon, siteUrl()),
+  });
+  return { today: today.length, soon: soon.length, ...result };
+}
+
+/** Tells the admins a step of the cron failed. Best effort: if mail is what broke, this fails too. */
+async function sendFailureNotice(errors: string[]) {
+  try {
+    const items = errors
+      .map((e) => `<li style="margin:6px 0;font:14px/20px monospace;color:${C.ink2};">${escapeHtml(e)}</li>`)
+      .join("");
+    await sendEmail({
+      to: adminRecipients(),
+      subject: "Doğum günü cron'u hata verdi - Team1 Türkiye",
+      html: emailShell({
+        title: "Doğum günü cron'u hata verdi",
+        preheader: "Bugünkü doğum günü işlemlerinin bir kısmı tamamlanamadı.",
+        siteUrl: siteUrl(),
+        rows:
+          row(heading("Cron hata verdi"), "8px 0 0") +
+          row(paragraph("Bugünkü doğum günü işlemlerinin bir kısmı tamamlanamadı. Ayrıntı Vercel loglarında da var."), "0") +
+          row(`<ul style="margin:0;padding-left:20px;">${items}</ul>`, "16px 0 0"),
+        footer: "Bu e-posta Team1 Türkiye Doğum Günü Takvimi'nin günlük cron'undan otomatik gönderildi.",
+      }),
+    });
+  } catch (err) {
+    console.error("[cron/birthday-digest] failure notice not sent:", err instanceof Error ? err.message : err);
+  }
+}
+
 /**
  * Daily birthday digest + opt-in member notifications, triggered by Vercel
  * Cron (see vercel.json). When CRON_SECRET is set, Vercel automatically
  * sends it as a Bearer token on scheduled invocations. This route rejects
  * anything else.
+ *
+ * The two halves are independent: if the member notifications throw, the
+ * admin digest is still sent, and vice versa. Any failure is logged, mailed
+ * to the admins (best effort) and makes the invocation respond 500, so it
+ * shows up as failed in Vercel.
  */
 export async function GET(req: NextRequest) {
   const expectedSecret = process.env.CRON_SECRET;
@@ -141,34 +201,25 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const memberNotifications = await sendMemberNotifications();
+  const errors: string[] = [];
+  const attempt = async (step: string, run: () => Promise<Record<string, unknown>>) => {
+    try {
+      return await run();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[cron/birthday-digest] ${step} failed:`, message);
+      errors.push(`${step}: ${message}`);
+      return { ran: false, error: message };
+    }
+  };
 
-  const { today, soon } = await buildDigest();
-  if (today.length === 0 && soon.length === 0) {
-    return NextResponse.json({
-      digest: { sent: false, reason: "no birthdays today or in the lead window", today: 0, soon: 0 },
-      memberNotifications,
-    });
-  }
+  const memberNotifications = await attempt("member notifications", sendMemberNotifications);
+  const digest = await attempt("digest", sendDigest);
 
-  const recipients = (process.env.ADMIN_NOTIFY_EMAILS ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  if (errors.length > 0) await sendFailureNotice(errors);
 
-  const subject =
-    today.length > 0
-      ? `Bugün doğum günü olan ${today.length} kişi var - Team1 Türkiye`
-      : `Yaklaşan doğum günleri - Team1 Türkiye`;
-
-  const digestResult = await sendEmail({
-    to: recipients,
-    subject,
-    html: renderDigestEmailHtml(today, soon, siteUrl()),
-  });
-
-  return NextResponse.json({
-    digest: { today: today.length, soon: soon.length, ...digestResult },
-    memberNotifications,
-  });
+  return NextResponse.json(
+    { digest, memberNotifications, ...(errors.length > 0 ? { errors } : {}) },
+    { status: errors.length > 0 ? 500 : 200 }
+  );
 }
