@@ -17,17 +17,14 @@ import { platformLabel } from "@/lib/socials";
 import { genitive } from "@/lib/tr";
 import type { Member } from "@/lib/types";
 
-/** Days-before-birthday points that trigger an opt-in reminder to teammates. 0 = the day itself. */
-export const MEMBER_NOTIFY_MILESTONES = [7, 3, 0] as const;
-
 /** Dedup key (in birthday_notifications.milestone) for the greeting the birthday person gets. */
 export const SELF_GREETING_MILESTONE = -1;
 
 const fullName = (m: Member) => `${m.first_name} ${m.last_name}`;
 
-export function renderMemberNotificationSubject(member: Member, milestone: number): string {
+export function renderMemberNotificationSubject(member: Member, daysLeft: number): string {
   const name = genitive(fullName(member));
-  return milestone === 0 ? `Bugün ${name} doğum günü` : `${name} doğum gününe ${milestone} gün kaldı`;
+  return daysLeft === 0 ? `Bugün ${name} doğum günü` : `${name} doğum gününe ${daysLeft} gün kaldı`;
 }
 
 export function renderSelfGreetingSubject(member: Member): string {
@@ -54,11 +51,11 @@ function profileBlock(member: Member, includeFacts: boolean): string {
 /** Heads-up (7 or 3 days) or the day itself (0), sent to teammates. */
 export function renderMemberNotificationHtml(
   member: Member,
-  milestone: number,
+  daysLeft: number,
   siteUrl: string
 ): string {
   const name = fullName(member);
-  const today = milestone === 0;
+  const today = daysLeft === 0;
 
   const hero = today
     ? slab(
@@ -68,7 +65,7 @@ export function renderMemberNotificationHtml(
       )
     : slab(
         "Doğum gününe",
-        bigNumber(milestone, "gün kaldı") +
+        bigNumber(daysLeft, "gün kaldı") +
           slabTitle(`${genitive(name)} doğum günü`, formatBirthdayLong(member.birthday))
       );
 
@@ -92,10 +89,10 @@ export function renderMemberNotificationHtml(
   ].join("");
 
   return emailShell({
-    title: renderMemberNotificationSubject(member, milestone),
+    title: renderMemberNotificationSubject(member, daysLeft),
     preheader: today
       ? `Bugün ${genitive(name)} doğum günü.`
-      : `${genitive(name)} doğum gününe ${milestone} gün kaldı.`,
+      : `${genitive(name)} doğum gününe ${daysLeft} gün kaldı.`,
     siteUrl,
     rows,
     footer: MANAGE_FOOTER(siteUrl),

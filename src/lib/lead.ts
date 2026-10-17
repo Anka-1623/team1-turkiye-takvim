@@ -1,7 +1,7 @@
 import type { User } from "@supabase/supabase-js";
 
 /** Accounts allowed into /yonetim: the comma-separated LEAD_EMAILS env var (server-only). */
-function leadEmails(): string[] {
+export function leadEmails(): string[] {
   return (process.env.LEAD_EMAILS ?? "")
     .split(",")
     .map((e) => e.trim().toLowerCase())

@@ -6,6 +6,10 @@ alanları ve bir not girer; panel bunu herkese açık listeler. Doğum günü
 yaklaşan/bugün olan üyeler panelde görünür ve isteyen üyelere 7/3 gün
 kala ve gün geldiğinde e-posta ile hatırlatılır.
 
+Amaç tek: üyeler birbirinin doğum gününü kaçırmasın. İlgi alanı, istek ve not
+alanları sadece hediye/kutlama fikri vermek için var; bu bir üye rehberi değil.
+Site arama motorlarına kapalıdır (`robots.txt` her şeyi engeller, sayfalar `noindex`).
+
 ## Nasıl çalışıyor
 
 - **Next.js (App Router) + Tailwind** — tüm frontend ve tek backend katmanı.
@@ -15,7 +19,10 @@ kala ve gün geldiğinde e-posta ile hatırlatılır.
 - **Resend** — (a) admin'e günlük özet (bugün + 3 gün sonra olanlar) ve
   (b) bildirimi açan üyelere, bir teammate'in doğum günü 7/3/0 gün
   kala kişiye özel hatırlatma.
-- **Vercel Cron** — her ikisini de her gün tetikler (`vercel.json`).
+- **Vercel Cron** — her ikisini de her gün tetikler (`vercel.json`). İkisi
+  birbirinden bağımsızdır: biri hata verirse diğeri yine çalışır, hata Vercel'de
+  başarısız çalıştırma (500) olarak görünür ve `ADMIN_NOTIFY_EMAILS` adreslerine
+  kısa bir hata maili gider (mail servisi çöktüyse o da gitmeyebilir, log kalır).
 
 ### Giriş sistemi
 
@@ -24,14 +31,44 @@ Supabase Admin API ile tek kullanımlık bir giriş linki üretir ve tasarlanmı
 giriş mailini Resend ile gönderir. Linke tıklayınca `/auth/confirm` token'ı
 oturuma çevirir. Link, isteğin geldiği alan adına kurulur, yani Supabase'deki
 Site URL ayarına bağlı değildir (localhost'a yönlenme sorunu burada yaşanmaz).
-Kötüye kullanımı sınırlamak için e-posta başına 15 dakikada 3, toplamda saatte
-120 giriş maili izni vardır (`login_email_log` tablosu). Sunucu tarafı mail
+Kötüye kullanımı sınırlamak için e-posta başına 15 dakikada 3, IP başına saatte
+10, toplamda saatte 40 ve günde 80 giriş maili izni vardır (`login_email_log`
+tablosu; IP adresi değil, tuzlanmış hash'i tutulur ve 24 saat sonra silinir).
+Genel limitler bilerek Resend ücretsiz planının günlük 100 mailinin altında:
+hatırlatmalar ve yönetici özeti aynı kotadan yer. Üye sayısı artıp bu limit
+gerçek girişleri kesmeye başlarsa asıl çözüm Resend planını yükseltmektir.
+Sunucu tarafı mail
 kurulamazsa form, Supabase'in yerleşik magic link'ine (`/auth/callback`) düşer.
 
 Panel (`/`) herkese açık kalır; sadece kayıt (`/kayit`) ve kaydını düzenleme
 (`/kaydim`) giriş ister. Önceden Member Portal ID ile (login yokken) kaydolmuş
 üyeler `/kaydim`'de o ID'yi girerek eski kayıtlarını yeni hesaplarına
 bağlayabilir (`claim_legacy_member`).
+
+### Üyelik doğrulaması
+
+Kayıtta zorunlu olanlar: ad, soyad, **Member Portal ID**, doğum tarihi ve en az bir
+sosyal medya bağlantısı. İlgi alanı, istek, not ve **adres** isteğe bağlıdır. Adres
+ve Portal ID panelde hiç görünmez: sadece üyenin kendisi ve yerel lider görür.
+
+Gerçek Team1 Türkiye üyelerinin Portal ID'leri `portal_roster` tablosunda durur
+(sadece sunucu okur, tarayıcıya hiç gitmez). Bu liste repoda **yoktur**, repo
+herkese açık; Supabase SQL Editor'den elle yüklenir.
+
+- ID listedeyse kayıt hemen onaylanır (`members.approved`, bunu veritabanındaki bir
+  tetikleyici karar verir, istemci kendini onaylayamaz).
+- ID listede yoksa (ya da yazılmadıysa) kayıt **onay bekler**: panelde ve hatırlatma
+  e-postalarında görünmez, `LEAD_EMAILS`'teki yerel lidere e-posta gider
+  (`/api/members`). Üye kendi kaydını `/kaydim`'de görür ve ID'sini düzeltebilir;
+  listedeki bir ID yazarsa kayıt kendiliğinden onaylanır.
+- Yerel lider `/yonetim`'de bekleyenleri **onaylar** ya da **sistemden siler**
+  (hesap da silinir). Aynı panel, zaten kayıtlı olup listede olmayan ya da ID'si
+  olmayan üyeleri de işaretler.
+- Doğrulanmış (listedeki) bir ID sonradan başka bir ID ile değiştirilemez.
+
+Portal ID'ler `T1-040-123` gibi tahmin edilebilir bir biçimde; listedeki bir ID'yi
+yazmak tek başına güçlü bir kanıt sayılmaz. Şüpheli bir hesap için yönetim panelinde
+hesap e-postası görünür, lider silebilir.
 
 Tüm mailler (giriş, hatırlatma, kutlama, yönetici özeti) `src/lib/emailLayout.ts`
 içindeki ortak tasarımdan üretilir.
@@ -43,7 +80,10 @@ olarak işaretli gelir, `/kaydim`'den kapatılır),
 kendileri hariç her teammate'in doğum günü 7 ve 3 gün kala ve gün
 geldiğinde bir mail alır — mailde ilgi alanları/not da görünür (hediye
 fikri için). Aynı hatırlatmanın bir yılda birden fazla gitmemesi
-`birthday_notifications` tablosuyla garanti edilir. Bu akış, `auth.users`
+`birthday_notifications` tablosuyla garanti edilir. Cron bir gün hata verip
+7 ya da 3 gün hatırlatmasını göndermediyse, ertesi gün (6 ya da 2 gün kala)
+mailde gerçek kalan gün yazarak yine gider; doğum günü gününün ikinci şansı
+yoktur. Bu akış, `auth.users`
 mailine ve tüm üyelerin bildirim tercihine erişmesi gerektiği için
 `SUPABASE_SERVICE_ROLE_KEY` gerektirir — anahtar yoksa cron'un geri kalanı
 (admin özeti) çalışmaya devam eder, sadece bu kısım atlanır.
@@ -51,7 +91,9 @@ mailine ve tüm üyelerin bildirim tercihine erişmesi gerektiği için
 ### Yönetim paneli (yerel lider)
 
 `/yonetim`, kayıt olan herkesi tam doğum tarihi (yıl dahil), yaş, hesap
-e-postası, kayıt tarihi ve hatırlatma tercihiyle listeler. Sadece
+e-postası, kayıt tarihi, Member Portal ID (listede mi değil mi), adres ve
+hatırlatma tercihiyle listeler; onay bekleyenler ve listede olmayanlar en üstte
+durur, her satırdan onaylanabilir ya da silinebilir. Sadece
 `LEAD_EMAILS` listesindeki adreslerden biriyle (doğrulanmış e-posta, yani
 normal magic-link girişiyle) açılır; girişsiz ziyaretçi giriş sayfasına
 yönlenir, başka bir hesap 404 görür. Liste tarayıcıya anon key ile değil,
@@ -66,13 +108,14 @@ sadece bir doğum günü geldiğinde o kişinin adını yazar.
 Anon key public repo'da ve tarayıcı paketinde açık — bu tasarım gereği
 (Supabase anon key'ler bunun için var). Bunu güvenli kılan şey:
 
-- `members` tablosunda RLS açık; `portal_id`, `user_id`, `notify_opt_in`
-  **hiçbir zaman** anon/authenticated'e toplu okunabilir değil (kolon
-  bazlı `GRANT SELECT` ile engelleniyor — kendi ayarını okumak için
-  `get_my_member()` kullanılır).
+- `members` tablosunda RLS açık; `portal_id`, `user_id`, `address`, `approved`,
+  `notify_opt_in` **hiçbir zaman** anon/authenticated'e toplu okunabilir değil
+  (kolon bazlı `GRANT SELECT` ile engelleniyor — kendi bilgilerini okumak için
+  `get_my_member()` kullanılır). Onay bekleyen bir kayıt sadece sahibine görünür.
+- `portal_roster` tablosundan anon/authenticated hiçbir şey okuyamaz.
 - Ekleme/güncelleme/silme gerçek RLS politikalarıyla kontrol ediliyor:
   bir satırı sadece `user_id = auth.uid()` olan hesap değiştirebilir/
-  silebilir. Portal ID artık bir "şifre" değil, sadece eski kayıtları
+  silebilir. Portal ID bir "şifre" değil: üyelik doğrulaması ve eski kayıtları
   bağlamak için tek seferlik bir anahtar.
 - `SUPABASE_SERVICE_ROLE_KEY` sadece cron route'unda, sunucu tarafında
   kullanılır — asla `NEXT_PUBLIC_` değil, tarayıcıya hiç gitmez.
@@ -86,6 +129,17 @@ cp .env.example .env.local   # değerleri doldur, bkz. aşağı
 npm run dev
 ```
 
+Kontroller (GitHub Actions'ta her PR'da da çalışır):
+
+```bash
+npm run lint && npm run typecheck && npm test
+```
+
+Testler tarih mantığını (yıl sonu, 29 Şubat, İstanbul saati), hatırlatma günlerini
+ve cron'un hata davranışını kapsar. Bir şemayı değiştiren PR'lar için
+`supabase/migrations/` altındaki SQL'i, kodu yayınlamadan önce Supabase SQL
+Editor'de çalıştır.
+
 ### Ortam değişkenleri (`.env.local`)
 
 | Değişken | Nereden |
@@ -98,7 +152,7 @@ npm run dev
 | `MAIL_FROM_NAME` | Kozmetik, boş bırakılırsa `Team1 Türkiye` kullanılır |
 | `NEXT_PUBLIC_SITE_URL` | İsteğe bağlı. Cron mailleri ve görseller için kanonik adres (ör. `https://team1-turkiye-takvim.vercel.app`); boşsa Vercel'in production alan adı kullanılır |
 | `ADMIN_NOTIFY_EMAILS` | Günlük özeti alacak adres(ler), virgülle ayrılmış |
-| `LEAD_EMAILS` | `/yonetim` yönetim panelini açabilecek adres(ler) (yerel lider), virgülle ayrılmış. `SUPABASE_SERVICE_ROLE_KEY` de gerekir |
+| `LEAD_EMAILS` | `/yonetim` yönetim panelini açabilecek adres(ler) (yerel lider), virgülle ayrılmış; onay bekleyen kayıtların bildirimi de bu adreslere gider. `SUPABASE_SERVICE_ROLE_KEY` de gerekir |
 
 `.env*` dosyaları `.gitignore`'da (`.env.example` hariç) — gerçek key'ler
 asla repoya girmez.
@@ -106,7 +160,8 @@ asla repoya girmez.
 ### Veritabanını sıfırdan kurmak
 
 Yeni bir Supabase projesinde SQL Editor'den [`supabase/schema.sql`](./supabase/schema.sql)
-dosyasını çalıştırman yeterli.
+dosyasını çalıştırman yeterli. Sonra üye listesini (`portal_roster`) yükle: yoksa her
+yeni kayıt onay bekler (yönetim paneli bunu uyarı olarak gösterir).
 
 ## Deploy (Vercel)
 
